@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.0
+
+- `AGENTS.md` na raiz: roteiro para o agente da pessoa conduzir a montagem por conversa
+  (entrevista, plano, criação, adaptação, GitHub dela, ligar o Hermes, crescer). Nomes livres.
+- README reescrito para não técnicos: mensagem pronta para colar no agente e fluxos visuais (Mermaid).
+- Detalhes técnicos movidos para `docs/referencia.md`.
+
 ## 1.2.0
 
 - Frota completa no modelo de produção: orquestrador + agentes macro por área (`novo-agente.sh`).

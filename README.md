@@ -1,250 +1,138 @@
-# hermes-agent-template
+# 🧠 hermes-agent-template
 
-Monte uma **frota de agentes [Hermes Agent](https://github.com/NousResearch/hermes-agent) com memória versionada no GitHub**:
-um **cérebro** compartilhado, um **agente orquestrador** que cuida dele e, quando você precisar, **agentes macro por área**
-(comercial, operação, desenvolvimento…), cada um com a sua casa e o seu runtime.
+**Dê ao seu agente de IA uma memória organizada, que cresce com você e fica guardada no seu GitHub.**
 
-É a mesma organização que usamos em produção, sem nenhum dado nosso: só a estrutura, os contratos e os scripts.
+Este template monta, em uma conversa, a mesma estrutura que usamos para operar uma frota de agentes [Hermes](https://github.com/NousResearch/hermes-agent):
+um **cérebro** com tudo que sua organização sabe e decide, um **agente principal** que cuida dele e,
+quando fizer sentido, **agentes especialistas** para cada área.
 
----
-
-## Sumário
-
-1. [Como funciona](#como-funciona)
-2. [Por que assim](#por-que-assim)
-3. [Começar](#começar)
-4. [Crescer: agentes macro por área](#crescer-agentes-macro-por-área)
-5. [Estrutura completa](#estrutura-completa)
-6. [Dia a dia](#dia-a-dia)
-7. [Infraestrutura e segurança](#infraestrutura-e-segurança)
+Você escolhe todos os nomes. Nenhum dado nosso vem junto: só a organização.
 
 ---
 
-## Como funciona
+## ✨ Comece em 1 minuto
 
-Tudo se divide em **três camadas**, cada uma respondendo a uma pergunta:
-
-| Camada | Onde | Pergunta que responde | Versionada? |
-|---|---|---|---|
-| **Cérebro** | repo `<slug>-cerebro` | *O que a organização sabe e decidiu?* | Sim, GitHub privado |
-| **Casa de execução** | repo `<slug>-casa` (e uma `<slug>-casa-<agente>` por agente macro) | *Como cada agente executa?* | Sim, GitHub privado |
-| **Runtime** | `~/.hermes` (e `~/.hermes/profiles/<agente>`) | *Com o que ele roda agora?* config, secrets, sessões | **Nunca** |
+Copie a mensagem abaixo e **cole no seu agente** (Hermes, Claude, ChatGPT com terminal, Codex...):
 
 ```text
-                               ┌──────────────────────────────────────┐
-     você / o time  ──edita──▶ │  <slug>-cerebro   (memória da org)   │ ◀── registros duráveis
-                               │  contexto · decisões · lições ·      │     (decisão, lição, status)
-                               │  status · áreas · agentes · contratos│     escritos pelos agentes
-                               └───────┬───────────────────┬──────────┘
-                     identidade do     │                   │  contexto da área
-                     orquestrador      ▼                   ▼
-                  ┌─────────────────────────┐   ┌─────────────────────────┐
-                  │ <slug>-casa             │   │ <slug>-casa-<agente>    │   ← um por agente macro
-                  │ orquestrador: rotinas,  │   │ identidade + execução   │
-                  │ gates, handoffs, relat. │   │ do agente da área       │
-                  └───────────┬─────────────┘   └───────────┬─────────────┘
-                 terminal.cwd │  projetar.sh (SOUL)         │ terminal.cwd │ projetar.sh
-                              ▼                             ▼
-                  ┌─────────────────────────┐   ┌─────────────────────────┐
-                  │ ~/.hermes               │   │ ~/.hermes/profiles/<ag> │   ← runtime: config, .env,
-                  │ (runtime orquestrador)  │   │ (runtime isolado)       │     sessões, cron — sem Git
-                  └─────────────────────────┘   └─────────────────────────┘
+Quero montar a estrutura do https://github.com/DizevolvTech/hermes-agent-template
+para a minha organização. Leia o AGENTS.md do repositório e me conduza passo a passo:
+faça as perguntas, crie as pastas, adapte tudo à minha realidade e versione no meu GitHub.
 ```
 
-**O ciclo:**
+O agente vai conversar com você e fazer o resto:
 
-1. **O Hermes lê a identidade**: o `SOUL.md` vem do `HERMES_HOME` e o `AGENTS.md` vem do diretório de trabalho (a casa).
-   O `scripts/projetar.sh` copia os dois a partir da fonte canônica. Com `--check`, avisa se alguém editou o runtime à mão (drift).
-2. **O agente trabalha a partir da casa**: segue o bootstrap, consulta o cérebro de forma **seletiva** (MAPA → busca),
-   roda rotinas registradas e abre pedidos para outros agentes.
-3. **Ao fechar uma tarefa, o agente registra**: classifica o resultado como decisão, lição, status, pendência ou nada,
-   e grava na menor casa possível do cérebro, por commit. O hook valida o commit e o GitHub guarda a história.
+```mermaid
+flowchart LR
+    A["📋 Você cola<br/>a mensagem"] --> B["💬 O agente pergunta<br/>nomes, áreas, canal"]
+    B --> C["🗂️ Cria e adapta<br/>as pastas"]
+    C --> D["🔒 Salva no seu<br/>GitHub privado"]
+    D --> E["🚀 Liga o agente<br/>e testa com você"]
+```
+
+> Prefere fazer sozinho? `git clone` deste repositório e rode `./setup.sh`; ele faz as mesmas perguntas.
 
 ---
 
-## Por que assim
+## 🏠 Como funciona
 
-| Escolha | Benefício |
+Pense numa empresa: existe a **memória** (o que já foi decidido e aprendido), o **escritório** onde o trabalho acontece
+e o **computador** ligado na tomada. Aqui é igual:
+
+```mermaid
+flowchart TB
+    subgraph G["☁️ Seu GitHub (privado)"]
+        C["🧠 Cérebro<br/><i>o que a organização sabe e decidiu</i><br/>decisões · aprendizados · status · áreas"]
+        K["🏠 Casa<br/><i>onde o agente trabalha</i><br/>rotinas · tarefas · ferramentas"]
+    end
+    R["⚙️ Runtime na sua máquina<br/><i>senhas, configurações, conversas</i><br/>nunca vai para o GitHub"]
+    C -- "identidade e contexto" --> K
+    K -- "o agente trabalha daqui" --> R
+    R -. "ao terminar, registra o que aprendeu" .-> C
+```
+
+| | O que guarda | Exemplo |
+|---|---|---|
+| 🧠 **Cérebro** | Memória da organização | "Decidimos atender só por WhatsApp", "o preço mudou em março" |
+| 🏠 **Casa** | Como o agente executa | Rotina diária de resumo, pedidos para outros agentes, relatórios |
+| ⚙️ **Runtime** | Estado vivo e segredos | Token do Telegram, histórico das conversas |
+
+### O ciclo do dia a dia
+
+```mermaid
+flowchart LR
+    P["🙋 Você pede algo"] --> L["🔎 O agente consulta<br/>o cérebro"]
+    L --> F["🛠️ Faz o trabalho<br/>na casa"]
+    F --> Q{"Aprendeu ou<br/>decidiu algo?"}
+    Q -- "sim" --> M["📝 Registra no cérebro<br/>(decisão, lição, status)"]
+    Q -- "não" --> X["✅ Pronto"]
+    M --> X
+```
+
+Cada registro vira um commit: tem data, autor e motivo. Daqui a um ano, você (ou um agente novo) sabe **por que** as coisas são como são.
+
+---
+
+## 💡 Por que assim
+
+- **🧠 A memória é da organização, não do agente.** Troque de modelo, de máquina ou de agente: o que foi aprendido continua lá.
+- **🔍 Tudo auditável.** Cada decisão tem histórico no GitHub. Dá para ver o que mudou, quando e reverter.
+- **🧭 Nunca vira bagunça.** Cada pasta tem um mapa (`MAPA.md`), e o próprio Git bloqueia pasta nova fora do mapa.
+  O agente acha o que precisa sem ler tudo, o que deixa as respostas melhores e mais baratas.
+- **🔒 Segredos protegidos.** Senhas e tokens ficam só na sua máquina, e o Git bloqueia se alguém tentar salvar um.
+- **🎛️ Autonomia com limites.** Você define o que o agente pode fazer sozinho e o que precisa da sua aprovação.
+- **🌱 Cresce por área.** Começa com um agente só; quando uma área pedir, ganha um especialista sem bagunçar o resto.
+- **💻 Uma máquina basta.** Tudo pode rodar numa única VPS ou computador.
+
+---
+
+## 🌱 Crescendo: agentes especialistas por área
+
+Comece **só com o agente principal**. Quando uma área tiver muita demanda, peça ao seu agente:
+*"crie um agente especialista para vendas chamado ___"*. Ele usa o `novo-agente.sh` e organiza tudo.
+
+```mermaid
+flowchart TB
+    H["👤 Você"] --> O["🧭 Agente principal<br/><i>coordena, organiza o cérebro, delega</i>"]
+    O --> V["💼 Especialista<br/>Vendas"]
+    O --> OP["⚙️ Especialista<br/>Operações"]
+    O --> D["💻 Especialista<br/>Desenvolvimento"]
+    V & OP & D --> C[("🧠 Cérebro compartilhado")]
+    O --> C
+```
+
+- Cada especialista tem **sua casa, sua configuração e seu canal**, e todos compartilham o mesmo cérebro.
+- O agente principal é o **coordenador**: distribui pedidos, mantém tudo organizado e audita.
+- Um especialista cuida da **sua área** e devolve para o principal o que for de outra.
+- Os nomes são seus: "Mercúrio", "Ana do Comercial", "Bot de Vendas"...
+
+---
+
+## 📦 O que vem pronto
+
+| | |
 |---|---|
-| **Memória em Git, não só na cabeça do agente** | Toda decisão e lição tem data, autor e diff. Dá para auditar, reverter e entender *por que* algo é assim. Trocar de modelo, de máquina ou de agente não apaga o que a organização aprendeu. |
-| **Cérebro separado da execução** | O conhecimento não fica preso a um agente. Vários agentes leem o mesmo cérebro, e a casa pode ser refeita sem perder memória. |
-| **Runtime fora do Git** | Secrets, sessões e logs nunca vazam para um repositório. Reinstalar o runtime vira: clonar os repos, restaurar o `.env` e rodar `projetar.sh`. |
-| **Fonte canônica única + projeção com detecção de drift** | A identidade é editada em um lugar só. O runtime nunca diverge em silêncio. |
-| **`MAPA.md` validado em todo commit** | O cérebro continua navegável com centenas de arquivos. O agente encontra o que precisa sem carregar tudo, o que economiza contexto e dá respostas melhores. |
-| **Livros-razão com formato fixo** (`current-status`, `decisions`, `lessons`) | "O que vale agora" tem uma resposta só (`current-status` prevalece). Histórico é buscado por data e palavra-chave, não lido inteiro. |
-| **Orquestrador + agentes macro por área** | Cada domínio tem um dono especializado, com ferramentas, canal e permissões próprios. O orquestrador mantém a coerência: topologia, gates, rotinas e auditoria. Você escala por área sem criar um agente monolítico. |
-| **Gates, RBAC e registro de recorrências** | Autonomia com limite: o que é sensível pede aprovação explícita, e nenhuma rotina roda sem estar registrada com kill switch. |
-| **Uma máquina basta** | O padrão é organizacional, não de infraestrutura. Começa numa VPS e, se crescer, separa os hosts sem mudar a estrutura. |
+| 🧠 **Cérebro** | Mapa de navegação, áreas da empresa, registro de decisões, aprendizados e status, identidade do agente, regras de convivência entre agentes |
+| 🧭 **Agente principal** | Personalidade, mandato, quem aprova o quê, formato de pedido de aprovação, registro de rotinas automáticas |
+| 🏠 **Casa** | Rotinas, pedidos entre agentes, relatórios, mensagens aguardando aprovação |
+| 🛡️ **Proteções** | Bloqueio de senha no Git, mapa sempre atualizado, aviso se alguém editar a identidade fora do lugar |
+| 🧰 **Ajudantes** | Criar estrutura, criar especialista, checar o que falta preencher, status do agente |
+
+Detalhes técnicos de cada pasta e script: [`docs/referencia.md`](docs/referencia.md).
 
 ---
 
-## Começar
+## 📚 Para ir mais fundo
 
-**Pré-requisitos:** `git`, `python3`, `perl`, de preferência o [`gh`](https://cli.github.com) logado (`gh auth login`), e uma identidade Git
-(`git config --global user.email "<seu-usuario>@users.noreply.github.com"` se não quiser expor seu e-mail).
-
-1. **Gere seus repositórios.** Clique em **Use this template** (ou clone este repo; ele é só o gerador) e rode:
-   ```bash
-   ./setup.sh
-   ```
-   O setup pergunta nome da organização, do agente orquestrador, owner, missão, o que a organização faz, idioma/fuso e canal.
-   Ele cria `<slug>-cerebro` e `<slug>-casa` lado a lado, com Git, hooks e o primeiro commit. Com o `gh` logado, oferece criar
-   os dois como **repos privados na sua conta ou org** e faz o push.
-
-2. **Adapte à sua realidade.** O que depende de você está marcado com `[[PREENCHER: ...]]`:
-   ```bash
-   <slug>-cerebro/scripts/checar-configuracao.sh     # lista arquivo:linha de cada pendência
-   ```
-   Ordem sugerida: `agentes/<orquestrador>/SOUL.md` → `USER.md` → `MANDATO.md` → `RBAC-MATRIZ.md` →
-   `empresa/contexto/` → apague as áreas que não existem na sua organização. Commite e faça push.
-
-3. **Ligue o Hermes.**
-   ```bash
-   curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
-   hermes setup                                   # modelo e canal; secrets ficam em ~/.hermes/.env
-   # em ~/.hermes/config.yaml:   terminal.cwd: <caminho>/<slug>-casa
-   <slug>-casa/scripts/projetar.sh                # identidade → runtime
-   cd <slug>-casa && hermes                       # "Quem é você e quem é seu owner?"
-   ```
-
-4. **Valide.** `scripts/status.sh` na casa e os casos de `cerebro/agentes/evals/`.
-
----
-
-## Crescer: agentes macro por área
-
-Comece **só com o orquestrador**. Quando uma área tiver demanda recorrente que ele não cobre bem, crie um agente macro para ela.
-Antes, aplique o gate de `cerebro/agentes/CONTRATO-CICLO-VIDA-AGENTES.md`.
-
-```bash
-./novo-agente.sh --cerebro ../<slug>-cerebro --agente "Mercurio" --area vendas
-```
-
-O script faz o seguinte:
-
-- Cria `<slug>-casa-mercurio` com identidade completa (SOUL, IDENTITY, USER, AGENTS, MEMORY), HEARTBEAT, TOOLS, contratos,
-  memória (`context/`, `integrations/`, `projects/`), skills e áreas de trabalho.
-- No cérebro: cria o ponteiro `agentes/mercurio.md`, adiciona uma linha na `TOPOLOGIA-MACRO-AGENTES.md`, indexa no MAPA, registra no changelog
-  do modelo operacional e cria a área, se ela ainda não existir. Tudo num commit validado.
-- Opcionalmente, cria o repo privado no seu GitHub.
-- Mostra os passos do runtime: `hermes profile create mercurio`, `terminal.cwd` do perfil, `projetar.sh` e smoke.
-
-```text
-                         owner humano
-                              │
-                     Orquestrador (ex.: "Orion")
-        cérebro · topologia · gates · rotinas · auditoria
-         ┌────────────────┬───────────────┬────────────────┐
-     Mercúrio (vendas)   Ceres (operações)  Vulcano (dev)   ...     ← agentes macro de área
-     casa + perfil    casa + perfil      casa + perfil
-         └────────────────┴───────┬───────┴────────────────┘
-                          <slug>-cerebro                          ← memória compartilhada
-```
-
-Regras que mantêm a frota saudável, já escritas nos contratos:
-
-- **Ownership por domínio.** Quem é dono é a área, não quem pediu nem o canal por onde o pedido chegou.
-- **Entre agentes, só handoff e retorno** (`CONTRATO-INTEGRACAO-AGENTES.md`). Um agente nunca mexe na casa ou no runtime de outro.
-- **Agentes macro não criam agentes.** Pedem ao orquestrador.
-- **Escrita no cérebro por domínio** (`CONTRATO-ACESSO-CEREBRO-AGENTES.md`). Cada agente escreve na sua área; o institucional passa pelo orquestrador.
-- **Ciclo de vida:** PROPOSTO → SANDBOX → PILOTO → ATIVO → PAUSADO → CONSOLIDANDO → APOSENTADO.
-
----
-
-## Estrutura completa
-
-### Cérebro (`<slug>-cerebro`)
-
-```text
-<slug>-cerebro/
-├── AGENTS.md                         ← bootstrap para qualquer agente que abrir o repo
-├── cerebro/
-│   ├── MAPA.md                       ← navegação por intenção ("preciso de X → vá para Y")
-│   ├── empresa/
-│   │   ├── contexto/                 ← geral, pessoas, canais, métricas, regras-repositorios, playbooks/
-│   │   │   ├── current-status.md     ← O QUE VALE AGORA (prevalece sobre o resto)
-│   │   │   ├── decisions.md          ← decisões humanas duráveis
-│   │   │   └── lessons.md            ← aprendizados que mudam comportamento
-│   │   ├── brand/  projetos/  skills/
-│   ├── areas/                        ← vendas, marketing, atendimento, operacoes, pessoas, governanca,
-│   │   └── <area>/                      desenvolvimento (+ _modelo-area): contexto/ rotinas/ projetos/ skills/
-│   ├── agentes/
-│   │   ├── TOPOLOGIA-MACRO-AGENTES.md← quem é quem: tipo, domínio, host, runtime, casa, canais, estado
-│   │   ├── CONTRATO-*.md             ← carregamento de contexto, captura de aprendizados, propagação,
-│   │   │                                integração entre agentes, ciclo de vida, acesso ao cérebro
-│   │   ├── PRINCIPIO-QUALIDADE-OPERACIONAL.md · CHANGELOG-MODELO-OPERACIONAL.md · evals/
-│   │   ├── <agente-macro>.md         ← ponteiro de cada agente macro
-│   │   └── <orquestrador>/           ← identidade completa do orquestrador:
-│   │       ├── SOUL · IDENTITY · USER · AGENTS · MEMORY (índice)
-│   │       ├── MANDATO · RBAC-MATRIZ · FORMATO-GATE · POLITICA-OPERACAO-CEREBRO · CHECKLIST-PRE-RUNTIME
-│   │       ├── REGISTRO-RECORRENCIAS.json   ← toda rotina agendada da frota, com kill switch
-│   │       ├── RUNTIME-STATUS · lessons · prompts/ · handoffs/
-│   ├── seguranca/                    ← checklist e auditorias
-│   └── archive/                      ← histórico morto (mover, não apagar)
-├── scripts/                          ← validate-mapas.py · registrar.py · scan-secrets.sh · checar-configuracao.sh
-└── .githooks/pre-commit              ← valida MAPA + secrets no snapshot staged
-```
-
-### Casa do orquestrador (`<slug>-casa`)
-
-```text
-<slug>-casa/
-├── AGENTS.md            ← carregado pelo Hermes; inclui o bloco projetado do cérebro
-├── BOOTSTRAP.md · TOOLS.md · .casa.conf
-├── automation/<rotina>/ ← código de cada rotina registrada no cérebro
-├── governance/templates/← GATE · REQ (pedido) · RETORNO
-├── handoffs/            ← REQ-<DESTINO>-<ASSUNTO>-<UTC>.md (correção = arquivo novo)
-├── reports/ · outbox/   ← relatórios sanitizados · mensagens aguardando aprovação
-├── contratos/ · memory/ · skills/ · hermes/ (config e systemd de exemplo) · var/
-└── scripts/             ← projetar.sh · status.sh · reconciliar-recorrencias.py · novo-req.sh · sync-bundle.sh · validate-casa.py
-```
-
-### Casa de agente macro (`<slug>-casa-<agente>`)
-
-```text
-<slug>-casa-<agente>/
-├── AGENTS.md · SOUL.md · IDENTITY.md · USER.md · MEMORY.md   ← identidade (fonte canônica deste agente)
-├── BOOTSTRAP.md · HEARTBEAT.md · TOOLS.md · RUNTIME_STATUS.md
-├── contratos/   ← limites, handoff, carregamento de contexto, backup/rollback
-├── memory/      ← pending · context/{decisions,lessons,people} · integrations/ · projects/ · sessions/
-├── skills/      ← <skill>/SKILL.md + evals/ + references/
-├── areas/       ← frentes de trabalho do agente
-└── scripts/ · hermes/ · var/
-```
-
-### Runtime
-
-Layout de `~/.hermes` e `~/.hermes/profiles/<agente>`, e o que mora em cada camada: [`docs/runtime.md`](docs/runtime.md).
-
----
-
-## Dia a dia
-
-| Situação | O que fazer |
+| Documento | Para quê |
 |---|---|
-| Terminou uma tarefa | O agente classifica e registra (`CONTRATO-CAPTURA-APRENDIZADOS.md`). Manual: `cerebro/scripts/registrar.py decisao\|licao\|status "..."` |
-| Mudou identidade ou regras | Edite no cérebro (ou na casa, se for agente macro) → `projetar.sh` → `projetar.sh --check` → smoke |
-| Nova rotina | Linha em `REGISTRO-RECORRENCIAS.json` → código em `automation/<key>/` → `hermes cron create` → `reconciliar-recorrencias.py` verde |
-| Delegar | `casa/scripts/novo-req.sh <DESTINO> <ASSUNTO>`; retorno com `governance/templates/RETORNO.md` |
-| Ação sensível | Gate completo (`FORMATO-GATE.md`); gate incompleto = HOLD |
-| Pasta nova no cérebro | Indexe no `MAPA.md` da pasta, senão o commit é bloqueado |
-| Novo agente de área | `./novo-agente.sh` (ver acima) |
+| [`AGENTS.md`](AGENTS.md) | O roteiro que o seu agente segue para montar tudo com você |
+| [`docs/arquitetura.md`](docs/arquitetura.md) | Os princípios por trás da estrutura |
+| [`docs/runtime.md`](docs/runtime.md) | Como o Hermes fica organizado na máquina (`~/.hermes`, perfis) |
+| [`docs/infraestrutura.md`](docs/infraestrutura.md) | Uma ou várias máquinas, serviço, sincronização |
+| [`docs/referencia.md`](docs/referencia.md) | Todas as pastas, scripts e comandos |
+| [`docs/sanitizacao.md`](docs/sanitizacao.md) | Para quem mantém um fork público |
 
 ---
 
-## Infraestrutura e segurança
-
-- **Uma VPS basta.** Cérebro, casas e runtime convivem na mesma máquina. Para separar hosts, use deploy keys por repo ou
-  `scripts/sync-bundle.sh`, que leva o repo sem colocar credencial do GitHub no host. Ver [`docs/infraestrutura.md`](docs/infraestrutura.md).
-- **Secrets só no `.env` do runtime.** Os hooks bloqueiam tokens conhecidos e arquivos como `.env` e `auth.json` nos repos.
-- **Repos gerados são privados.** Este template é público e não contém dado real; quem mantém um fork deve seguir [`docs/sanitizacao.md`](docs/sanitizacao.md).
-- Após clonar um repo gerado em outra máquina: `git config core.hooksPath .githooks` e ajuste `.casa.conf`.
-
-Mais: [`docs/arquitetura.md`](docs/arquitetura.md) · [`docs/runtime.md`](docs/runtime.md) · [`CHANGELOG.md`](CHANGELOG.md)
-
-## Contribuindo
-
-`tools/check-template.sh` precisa passar (roda no CI). Ele gera uma frota de teste (cérebro, casa e um agente macro), roda os validadores
-e procura secrets e dados privados.
-
-Licença MIT.
+<sub>Licença MIT · Contribuições: `tools/check-template.sh` precisa passar (roda no CI).</sub>
