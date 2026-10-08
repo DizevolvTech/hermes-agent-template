@@ -1,0 +1,14 @@
+# Exemplo de unit de usuário. Prefira `hermes gateway install/start` se sua versão oferecer.
+# Copie para ~/.config/systemd/user/ e ajuste caminhos.
+[Unit]
+Description=Hermes gateway — {{AGENT_NAME}}
+After=network-online.target
+
+[Service]
+Environment=HERMES_HOME=%h/.hermes
+WorkingDirectory={{CASA_PATH}}
+ExecStart=%h/.local/bin/hermes gateway run
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

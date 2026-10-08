@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Hook versionado. Ative com: git config core.hooksPath .githooks
+# Roda os validadores contra o SNAPSHOT staged (não contra a worktree).
+set -euo pipefail
+ROOT="$(git rev-parse --show-toplevel)"
+SNAP="$(mktemp -d)"; trap 'rm -rf "$SNAP"' EXIT
+git checkout-index -a --prefix="$SNAP/"
+"$ROOT/scripts/scan-secrets.sh" --staged
+for v in "$ROOT"/scripts/validate-*.py; do
+  [[ -e "$v" ]] || continue
+  python3 "$v" --root "$SNAP" || { echo "HOOK_FAIL: $(basename "$v")"; exit 1; }
+done
+echo "HOOK_OK"

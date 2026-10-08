@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "updated_at": "{{DATE}}",
+  "defaults": {
+    "owner_humano": "{{OWNER_NAME}}",
+    "owner_runtime": "{{AGENT_NAME}}",
+    "severity_actions": {
+      "informativo": "registrar evidência sanitizada e ficar em silêncio",
+      "atencao": "apontar owner, impacto e próximo passo; não corrigir por inferência",
+      "critico": "alertar o owner e manter qualquer mutação em HOLD"
+    }
+  },
+  "recurrences": [
+    {
+      "key": "resumo-diario-pendencias",
+      "scheduler": "hermes-cron",
+      "job_name": "resumo-diario-pendencias",
+      "schedule": "0 9 * * 1-5",
+      "action": "Ler pendências e current-status; resumir o que vence hoje",
+      "effects": "somente leitura + mensagem ao owner",
+      "condition_to_alert": "pendência vencida ou bloqueada",
+      "silence_rule": "nada vence hoje → não enviar",
+      "success_criteria": "mensagem entregue ou silêncio justificado",
+      "kill_switch": "hermes cron pause <id>",
+      "rollback": "hermes cron remove <id>",
+      "status": "proposta"
+    }
+  ]
+}
