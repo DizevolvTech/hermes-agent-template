@@ -78,8 +78,15 @@ git clone https://github.com/DizevolvTech/hermes-agent-template.git && cd hermes
 2. Teste em cada repo: `scripts/sync.sh --check` deve mostrar `remoto=sim a_enviar=0`.
 3. Explique a regra: ao fim de toda tarefa que mudar arquivos, o agente roda `scripts/sync.sh`
    (`cerebro/agentes/CONTRATO-SYNC-GIT.md`). Conflito = o agente para e avisa; nada se perde.
-4. Com o OK dela, ative a rotina de rede de segurança `sync-frota` (já descrita em `REGISTRO-RECORRENCIAS.json`):
-   `hermes cron create` rodando `<org>-casa/scripts/sync-frota.sh` a cada 30 min; depois mude o status da rotina para `ativo`.
+4. Com o OK dela, ative a rotina de rede de segurança `sync-frota` (já descrita em `REGISTRO-RECORRENCIAS.json`).
+   O Hermes só roda scripts de dentro de `$HERMES_HOME/scripts/`, então crie um atalho e o job sem LLM:
+   ```bash
+   mkdir -p ~/.hermes/scripts
+   printf '#!/usr/bin/env bash\nexec %s/scripts/sync-frota.sh "$@"\n' "<caminho>/<org>-casa" > ~/.hermes/scripts/sync-frota.sh
+   chmod +x ~/.hermes/scripts/sync-frota.sh
+   hermes cron create --name sync-frota --script sync-frota.sh --no-agent --deliver local "*/30 * * * *"
+   ```
+   Depois mude o `status` da rotina para `ativo` no registro e confira com `<org>-casa/scripts/reconciliar-recorrencias.py`.
 
 ## Etapa 5 — Ligar o agente
 

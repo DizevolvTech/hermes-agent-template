@@ -30,7 +30,7 @@
       "scheduler": "hermes-cron",
       "job_name": "sync-frota",
       "schedule": "*/30 * * * *",
-      "action": "Rodar {{SLUG}}-casa/scripts/sync-frota.sh (rede de segurança: envia commits pendentes de todos os repos)",
+      "action": "hermes cron create --name sync-frota --script sync-frota.sh --no-agent --deliver local (atalho em $HERMES_HOME/scripts/ chamando {{SLUG}}-casa/scripts/sync-frota.sh)",
       "effects": "git fetch/rebase/push nos repos da frota; não cria commits",
       "condition_to_alert": "HOLD_SYNC (conflito, credencial) ou repo com alterações sem commit por mais de 1 dia",
       "silence_rule": "tudo SYNC_OK → não enviar mensagem",

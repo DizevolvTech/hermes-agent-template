@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.1 — testado com Hermes real
+
+- Correção: agente de área com `HERMES_HOME` no ambiente projetava o SOUL por cima do orquestrador;
+  o perfil agora é sempre resolvido como `<raiz>/profiles/<agente>`.
+- Comando exato para ativar a rotina `sync-frota` no `hermes cron` (script em `$HERMES_HOME/scripts/`, `--no-agent`).
+- Validado com Hermes Agent instalado: perfil criado, contexto carregado por agente (SOUL + AGENTS corretos e isolados),
+  job de cron rodando o sync da frota até o remoto, reconciliador lendo o cron real.
+
 ## 1.5.0 — revisão de qualidade
 
 Segurança e robustez
