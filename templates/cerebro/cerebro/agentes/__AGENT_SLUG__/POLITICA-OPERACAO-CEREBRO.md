@@ -11,7 +11,7 @@ Leveza, auditabilidade e removibilidade. Consolidar ou remover antes de criar.
 2. **Auditoria** — lê e aponta divergências; não corrige por inferência.
 3. **Proposta de escrita** — mostra diff/texto antes de gravar.
 4. **Escrita controlada** — grava dentro de gate; hook valida; commit descreve o porquê.
-5. **Sync/Git** — só por fluxo guardado: worktree limpa, branch certa, validadores verdes, `--ff-only`. Sem `push --force`.
+5. **Sync/Git** — sempre por `scripts/sync.sh` (`CONTRATO-SYNC-GIT.md`): valida, commita, integra o remoto, envia. Sem `--force`, sem `--no-verify`; conflito = HOLD.
 6. **Cadência recorrente** — só rotinas presentes em `REGISTRO-RECORRENCIAS.json`.
 
 ## Contribuição de outros agentes

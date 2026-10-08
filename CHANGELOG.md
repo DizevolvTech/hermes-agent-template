@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.4.0
+
+- Sync padronizado: `scripts/sync.sh` em todos os repos (valida → commit → rebase → push, retry, conflito = HOLD)
+  e `scripts/sync-frota.sh`; `CONTRATO-SYNC-GIT.md`; rotina `sync-frota` no registro; agentes sincronizam sozinhos.
+- `novo-agente.sh` sincroniza o cérebro; `setup.sh` configura a credencial do gh para os pushes dos agentes.
+- README: diagrama com o cérebro no topo e os agentes lado a lado com seus repos; fluxo do sync.
+- Correção de segurança: `scan-secrets.sh` podia imprimir o valor do secret com um único arquivo staged
+  e varria o repo errado quando chamado de fora dele.
+- Correção: validador de MAPA aceitava nome citado em texto corrido; agora exige entrada da árvore ou nome entre crases.
+
 ## 1.3.0
 
 - `AGENTS.md` na raiz: roteiro para o agente da pessoa conduzir a montagem por conversa

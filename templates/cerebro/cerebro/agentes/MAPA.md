@@ -12,6 +12,7 @@ agentes/
 ├── CONTRATO-CAPTURA-APRENDIZADOS.md       ← fechamento de tarefa: o que vira registro
 ├── CONTRATO-PROPAGACAO-MUDANCAS.md        ← fonte canônica → projeção quente → validação
 ├── CONTRATO-INTEGRACAO-AGENTES.md         ← hierarquia, handoff e retorno entre agentes
+├── CONTRATO-SYNC-GIT.md                   ← como e quando cada agente faz commit + push
 ├── CONTRATO-CICLO-VIDA-AGENTES.md         ← criar, pilotar, ativar, pausar, aposentar agente
 ├── CHANGELOG-MODELO-OPERACIONAL.md        ← histórico de mudanças no modelo da frota
 ├── evals/                                 ← casos de teste de comportamento

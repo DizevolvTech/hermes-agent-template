@@ -32,7 +32,7 @@ Para quem quer os detalhes: o que cada pasta faz, scripts e comandos.
 │   │       ├── RUNTIME-STATUS · lessons · prompts/ · handoffs/
 │   ├── seguranca/                    ← checklist e auditorias
 │   └── archive/                      ← histórico morto (mover, não apagar)
-├── scripts/                          ← validate-mapas.py · registrar.py · scan-secrets.sh · checar-configuracao.sh
+├── scripts/                          ← sync.sh · sync-frota.sh · validate-mapas.py · registrar.py · scan-secrets.sh · checar-configuracao.sh
 └── .githooks/pre-commit              ← valida MAPA + secrets no snapshot staged
 ```
 
@@ -47,7 +47,7 @@ Para quem quer os detalhes: o que cada pasta faz, scripts e comandos.
 ├── handoffs/            ← REQ-<DESTINO>-<ASSUNTO>-<UTC>.md (correção = arquivo novo)
 ├── reports/ · outbox/   ← relatórios sanitizados · mensagens aguardando aprovação
 ├── contratos/ · memory/ · skills/ · hermes/ (config e systemd de exemplo) · var/
-└── scripts/             ← projetar.sh · status.sh · reconciliar-recorrencias.py · novo-req.sh · sync-bundle.sh · validate-casa.py
+└── scripts/             ← sync.sh · sync-frota.sh · projetar.sh · status.sh · reconciliar-recorrencias.py · novo-req.sh · sync-bundle.sh · validate-casa.py
 ```
 
 ### Casa de agente macro (`<slug>-casa-<agente>`)
@@ -60,7 +60,7 @@ Para quem quer os detalhes: o que cada pasta faz, scripts e comandos.
 ├── memory/      ← pending · context/{decisions,lessons,people} · integrations/ · projects/ · sessions/
 ├── skills/      ← <skill>/SKILL.md + evals/ + references/
 ├── areas/       ← frentes de trabalho do agente
-└── scripts/ · hermes/ · var/
+└── scripts/ (sync.sh, projetar.sh, status.sh...) · hermes/ · var/
 ```
 
 ### Runtime
@@ -82,6 +82,16 @@ Layout de `~/.hermes` e `~/.hermes/profiles/<agente>`, e o que mora em cada cama
 | Novo agente de área | `./novo-agente.sh` (ver acima) |
 
 ---
+
+## Sync (igual em todos os repos)
+
+| Script | O que faz |
+|---|---|
+| `scripts/sync.sh "msg"` | Valida (hooks) → commit → fetch + rebase em `origin/main` → push; repete até 3 vezes se outro agente enviou junto; conflito = HOLD |
+| `scripts/sync.sh --check` | Mostra alterações, se há remoto, commits a enviar/receber |
+| `scripts/sync-frota.sh [--check]` | Roda o sync em `<slug>-cerebro`, `<slug>-casa` e `<slug>-casa-*` lado a lado; não commita trabalho alheio |
+
+Regras: `cerebro/agentes/CONTRATO-SYNC-GIT.md`.
 
 ## Scripts do gerador
 

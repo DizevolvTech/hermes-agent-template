@@ -36,40 +36,76 @@ flowchart LR
 
 ## 🏠 Como funciona
 
-Pense numa empresa: existe a **memória** (o que já foi decidido e aprendido), o **escritório** onde o trabalho acontece
-e o **computador** ligado na tomada. Aqui é igual:
+No topo fica o **cérebro**, a memória que todos compartilham. Embaixo, lado a lado, ficam os **agentes**, cada um com o
+**seu repositório operacional** no GitHub (a "casa", onde ele trabalha). Todos leem o cérebro, registram nele o que
+aprenderam e **fazem o próprio sync**: commit e push.
 
 ```mermaid
 flowchart TB
-    subgraph G["☁️ Seu GitHub (privado)"]
-        C["🧠 Cérebro<br/><i>o que a organização sabe e decidiu</i><br/>decisões · aprendizados · status · áreas"]
-        K["🏠 Casa<br/><i>onde o agente trabalha</i><br/>rotinas · tarefas · ferramentas"]
+    C[("🧠 CÉREBRO<br/><b>sua-org-cerebro</b><br/>decisões · aprendizados · status<br/>áreas · regras · identidade dos agentes")]
+
+    subgraph D["💻 Área: Desenvolvimento"]
+        D1["<b>Vulcano</b><br/>especialista em sistemas"] -->|"sync · push"| D2["📁 GitHub<br/>sua-org-casa-vulcano"]
     end
-    R["⚙️ Runtime na sua máquina<br/><i>senhas, configurações, conversas</i><br/>nunca vai para o GitHub"]
-    C -- "identidade e contexto" --> K
-    K -- "o agente trabalha daqui" --> R
-    R -. "ao terminar, registra o que aprendeu" .-> C
+    subgraph P["⚙️ Área: Operações"]
+        P1["<b>Ceres</b><br/>especialista em operação"] -->|"sync · push"| P2["📁 GitHub<br/>sua-org-casa-ceres"]
+    end
+    subgraph V["💼 Área: Vendas"]
+        V1["<b>Mercúrio</b><br/>especialista comercial"] -->|"sync · push"| V2["📁 GitHub<br/>sua-org-casa-mercurio"]
+    end
+    subgraph O["🧭 Agente principal"]
+        O1["<b>Orion</b><br/>coordena e organiza"] -->|"sync · push"| O2["📁 GitHub<br/>sua-org-casa"]
+    end
+
+    C <-->|"lê · registra · sync"| D1
+    C <-->|"lê · registra · sync"| P1
+    C <-->|"lê · registra · sync"| V1
+    C <-->|"lê · registra · sync"| O1
 ```
 
-| | O que guarda | Exemplo |
-|---|---|---|
-| 🧠 **Cérebro** | Memória da organização | "Decidimos atender só por WhatsApp", "o preço mudou em março" |
-| 🏠 **Casa** | Como o agente executa | Rotina diária de resumo, pedidos para outros agentes, relatórios |
-| ⚙️ **Runtime** | Estado vivo e segredos | Token do Telegram, histórico das conversas |
+<sub>Os especialistas são opcionais: comece só com o agente principal e crie os outros quando uma área pedir. Orion, Mercúrio, Ceres e Vulcano são só exemplos: os nomes são todos seus.</sub>
 
-### O ciclo do dia a dia
+| | O que guarda | Onde fica |
+|---|---|---|
+| 🧠 **Cérebro** | Memória da organização: "decidimos X", "aprendemos Y", "o status hoje é Z" | GitHub privado: `sua-org-cerebro` |
+| 📁 **Casa de cada agente** | Como aquele agente trabalha: rotinas, tarefas, ferramentas, memória curta | GitHub privado: `sua-org-casa` (agente principal) e `sua-org-casa-<especialista>` |
+| ⚙️ **Runtime** | Senhas, tokens, configuração e histórico de conversas | Só na sua máquina (`~/.hermes`); nunca vai para o GitHub |
+
+### O ciclo de cada tarefa
 
 ```mermaid
 flowchart LR
-    P["🙋 Você pede algo"] --> L["🔎 O agente consulta<br/>o cérebro"]
-    L --> F["🛠️ Faz o trabalho<br/>na casa"]
+    P["🙋 Pedido"] --> L["🔎 Consulta<br/>o cérebro"]
+    L --> F["🛠️ Trabalha<br/>na sua casa"]
     F --> Q{"Aprendeu ou<br/>decidiu algo?"}
-    Q -- "sim" --> M["📝 Registra no cérebro<br/>(decisão, lição, status)"]
-    Q -- "não" --> X["✅ Pronto"]
-    M --> X
+    Q -- "sim" --> M["📝 Registra<br/>no cérebro"]
+    Q -- "não" --> S
+    M --> S["🔄 Sync<br/>commit + push"]
+    S --> X["✅ Pronto e<br/>salvo no GitHub"]
 ```
 
-Cada registro vira um commit: tem data, autor e motivo. Daqui a um ano, você (ou um agente novo) sabe **por que** as coisas são como são.
+### 🔄 Como o sync funciona
+
+Todo repositório da frota tem o **mesmo comando**, e os agentes o usam sozinhos ao terminar cada tarefa:
+
+```bash
+scripts/sync.sh "registro: decidimos atender só por WhatsApp"
+```
+
+```mermaid
+flowchart LR
+    A["📝 Mudanças"] --> B{"🛡️ Validação<br/>mapa em dia?<br/>sem senhas?"}
+    B -- "não" --> H1["⛔ Bloqueia e explica<br/>o que corrigir"]
+    B -- "sim" --> C["💾 Commit"]
+    C --> D["⬇️ Traz o que outros<br/>agentes enviaram"]
+    D --> E{"Conflito?"}
+    E -- "sim" --> H2["✋ Para e avisa você<br/>(nada se perde)"]
+    E -- "não" --> F["⬆️ Push<br/>para o GitHub"]
+```
+
+- Vários agentes podem escrever no cérebro ao mesmo tempo: o sync integra o trabalho de todos antes de enviar.
+- O agente principal roda um **sync da frota** periódico como rede de segurança (`scripts/sync-frota.sh`).
+- Nunca há push forçado, e ninguém pula a validação. Regras completas: `cerebro/agentes/CONTRATO-SYNC-GIT.md`.
 
 ---
 
@@ -81,6 +117,7 @@ Cada registro vira um commit: tem data, autor e motivo. Daqui a um ano, você (o
   O agente acha o que precisa sem ler tudo, o que deixa as respostas melhores e mais baratas.
 - **🔒 Segredos protegidos.** Senhas e tokens ficam só na sua máquina, e o Git bloqueia se alguém tentar salvar um.
 - **🎛️ Autonomia com limites.** Você define o que o agente pode fazer sozinho e o que precisa da sua aprovação.
+- **🔄 Tudo sincronizado.** Cada agente salva o próprio trabalho no GitHub com o mesmo comando, sem atropelar os outros.
 - **🌱 Cresce por área.** Começa com um agente só; quando uma área pedir, ganha um especialista sem bagunçar o resto.
 - **💻 Uma máquina basta.** Tudo pode rodar numa única VPS ou computador.
 
@@ -91,15 +128,7 @@ Cada registro vira um commit: tem data, autor e motivo. Daqui a um ano, você (o
 Comece **só com o agente principal**. Quando uma área tiver muita demanda, peça ao seu agente:
 *"crie um agente especialista para vendas chamado ___"*. Ele usa o `novo-agente.sh` e organiza tudo.
 
-```mermaid
-flowchart TB
-    H["👤 Você"] --> O["🧭 Agente principal<br/><i>coordena, organiza o cérebro, delega</i>"]
-    O --> V["💼 Especialista<br/>Vendas"]
-    O --> OP["⚙️ Especialista<br/>Operações"]
-    O --> D["💻 Especialista<br/>Desenvolvimento"]
-    V & OP & D --> C[("🧠 Cérebro compartilhado")]
-    O --> C
-```
+O especialista já nasce com casa própria (um repositório no seu GitHub), runtime isolado e lugar no cérebro, como no diagrama de [Como funciona](#-como-funciona).
 
 - Cada especialista tem **sua casa, sua configuração e seu canal**, e todos compartilham o mesmo cérebro.
 - O agente principal é o **coordenador**: distribui pedidos, mantém tudo organizado e audita.
@@ -115,6 +144,7 @@ flowchart TB
 | 🧠 **Cérebro** | Mapa de navegação, áreas da empresa, registro de decisões, aprendizados e status, identidade do agente, regras de convivência entre agentes |
 | 🧭 **Agente principal** | Personalidade, mandato, quem aprova o quê, formato de pedido de aprovação, registro de rotinas automáticas |
 | 🏠 **Casa** | Rotinas, pedidos entre agentes, relatórios, mensagens aguardando aprovação |
+| 🔄 **Sync** | O mesmo `scripts/sync.sh` em todos os repos (valida, integra, envia) e o sync da frota pelo agente principal |
 | 🛡️ **Proteções** | Bloqueio de senha no Git, mapa sempre atualizado, aviso se alguém editar a identidade fora do lugar |
 | 🧰 **Ajudantes** | Criar estrutura, criar especialista, checar o que falta preencher, status do agente |
 

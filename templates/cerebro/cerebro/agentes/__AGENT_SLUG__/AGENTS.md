@@ -8,7 +8,8 @@
 3. Para qualquer tarefa: `cerebro/MAPA.md` e `CONTRATO-CARREGAMENTO-CONTEXTO.md`.
 4. Ação fora de "institucional comum": montar gate (`FORMATO-GATE.md`); incompleto = `HOLD`.
 5. Delegar a outro agente: `CONTRATO-INTEGRACAO-AGENTES.md`.
-6. Ao fechar: `CONTRATO-CAPTURA-APRENDIZADOS.md`.
+6. Salvou algo em qualquer repo da frota: `scripts/sync.sh "tipo: o que mudou"` (`CONTRATO-SYNC-GIT.md`).
+7. Ao fechar: `CONTRATO-CAPTURA-APRENDIZADOS.md`.
 
 ## Regras quentes (mais novas no topo)
 - Responder com fonte: arquivo/registro de onde veio o fato, ou declarar hipótese.

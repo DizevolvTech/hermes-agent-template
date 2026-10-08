@@ -32,5 +32,14 @@ GIT_CONFIG_KEY_1=user.email GIT_CONFIG_VALUE_1=ci@example.invalid \
   ./novo-agente.sh --cerebro "$T/exemplo-sa-cerebro" --agente "Agente Area" --area "area nova" --sem-github --sim >/dev/null || fail=1
 python3 "$T/exemplo-sa-casa-agente-area/scripts/validate-casa.py" >/dev/null || fail=1
 python3 "$T/exemplo-sa-cerebro/scripts/validate-mapas.py" >/dev/null || fail=1
+# Sync ponta a ponta contra remotos locais (simulam repos novos e vazios no GitHub)
+export GIT_CONFIG_COUNT=2 GIT_CONFIG_KEY_0=user.name GIT_CONFIG_VALUE_0=ci GIT_CONFIG_KEY_1=user.email GIT_CONFIG_VALUE_1=ci@example.invalid
+for r in exemplo-sa-cerebro exemplo-sa-casa exemplo-sa-casa-agente-area; do
+  git init -q --bare -b main "$T/remoto-$r.git" && git -C "$T/$r" remote add origin "$T/remoto-$r.git"
+done
+"$T/exemplo-sa-casa/scripts/sync-frota.sh" >/dev/null || { echo "FAIL: sync-frota"; fail=1; }
+echo "- teste" >> "$T/exemplo-sa-cerebro/cerebro/empresa/projetos/pendencias.md"
+"$T/exemplo-sa-cerebro/scripts/sync.sh" "registro: teste de sync" >/dev/null || { echo "FAIL: sync"; fail=1; }
+[[ "$(git -C "$T/remoto-exemplo-sa-cerebro.git" log -1 --format=%s)" == "registro: teste de sync" ]] || { echo "FAIL: push não chegou"; fail=1; }
 if grep -rn '{{[A-Z_]*}}\|__AGENT_SLUG__' --exclude-dir=.git "$T"; then echo "FAIL: placeholder não substituído"; fail=1; fi
 [[ $fail -eq 0 ]] && echo "PASS_TEMPLATE" || { echo "FAIL_TEMPLATE"; exit 1; }

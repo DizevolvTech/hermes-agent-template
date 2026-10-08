@@ -2,7 +2,7 @@
 # Scan fail-closed por secrets em arquivos versionados. Nunca imprime o valor.
 # Uso: scripts/scan-secrets.sh [--staged]
 set -euo pipefail
-cd "$(git rev-parse --show-toplevel)"
+cd "$(dirname "$0")/.." && cd "$(git rev-parse --show-toplevel)"
 PATTERNS=(
   'ghp_[A-Za-z0-9]{36}' 'github_pat_[A-Za-z0-9_]{22,}' 'sk-[A-Za-z0-9_-]{20,}'
   'sk-ant-[A-Za-z0-9_-]{20,}' 'xox[baprs]-[A-Za-z0-9-]{10,}' 'AKIA[0-9A-Z]{16}'
@@ -16,7 +16,7 @@ for pat in "${PATTERNS[@]}"; do
   while IFS= read -r hit; do
     [[ -z "$hit" ]] && continue
     echo "HOLD_SECRET: padrão suspeito em $hit"; hits=$((hits+1))
-  done < <(echo "$FILES" | xargs -r grep -InE --binary-files=without-match -e "$pat" 2>/dev/null | cut -d: -f1,2 || true)
+  done < <(echo "$FILES" | xargs -r grep -HInE --binary-files=without-match -e "$pat" 2>/dev/null | cut -d: -f1,2 || true)
 done
 # Arquivos que nunca devem ser versionados
 while IFS= read -r f; do

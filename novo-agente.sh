@@ -107,10 +107,10 @@ open(p,"w").write(s)
 PY
 echo "- \`$AGENT_SLUG.md\` ← $AGENT, agente macro de $AREA (casa \`$(basename "$CASA")\`)" >> "$C/agentes/MAPA.md"
 printf '\n## %s — agente macro %s (%s)\n- Criado em estado PROPOSTO com casa `%s` e perfil Hermes próprio.\n' "$TODAY" "$AGENT" "$AREA" "$(basename "$CASA")" >> "$C/agentes/CHANGELOG-MODELO-OPERACIONAL.md"
-git -C "$CEREBRO" add -A
-git -C "$CEREBRO" commit -q -m "feat(agentes): agente macro $AGENT para a área $AREA (PROPOSTO)"
-echo "OK  cérebro atualizado"
 [[ -n "$GH" ]] && gh_publish "$CASA"
+# Commit + push do cérebro pelo caminho padrão (valida, integra o remoto, envia)
+"$CEREBRO/scripts/sync.sh" "estrutura: agente macro $AGENT para a área $AREA (PROPOSTO)" || exit $?
+echo "OK  cérebro atualizado"
 
 cat <<NEXT
 
@@ -122,4 +122,5 @@ Próximos passos para $AGENT:
   5. Teste:                      cd $CASA && hermes -p $AGENT_SLUG   → smoke de RUNTIME_STATUS.md
   6. Canal próprio (opcional):   hermes -p $AGENT_SLUG setup  (outro bot; secrets no .env do perfil)
   7. Ao passar no smoke: estado PILOTO na TOPOLOGIA e registro em current-status (scripts/registrar.py status).
+  8. Sync: ao fim de cada tarefa o agente roda scripts/sync.sh "tipo: o que mudou" (CONTRATO-SYNC-GIT.md).
 NEXT

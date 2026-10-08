@@ -54,7 +54,7 @@ git clone https://github.com/DizevolvTech/hermes-agent-template.git && cd hermes
 ```
 
 - Sem `gh` logado: use `--sem-github` e, no fim, ajude a criar os repos privados e fazer o push
-  (`git remote add origin ... && git push -u origin main`).
+  (`git remote add origin <url>` e depois `scripts/sync.sh`).
 - Sem terminal: explique os passos para ela rodar e acompanhe pelo resultado colado.
 - Se a identidade Git não estiver configurada, o script avisa; sugira o e-mail noreply do GitHub.
 
@@ -66,8 +66,18 @@ git clone https://github.com/DizevolvTech/hermes-agent-template.git && cd hermes
 3. **Conteúdo existente:** distribua usando o `cerebro/MAPA.md`. Decisões vão para `decisions.md`, aprendizados para
    `lessons.md`, estado atual para `current-status.md` e material de área para `areas/<area>/`. Secrets e logs nunca entram.
 4. Revise com ela `SOUL.md`, `USER.md`, `MANDATO.md` e `RBAC-MATRIZ.md` do agente: é a personalidade e o limite de autonomia.
-5. Commite em passos pequenos, com mensagens claras. Os hooks validam MAPA e secrets; se um commit for bloqueado, corrija e explique o motivo.
-6. Faça push quando ela aprovar.
+5. Salve em passos pequenos com `scripts/sync.sh "tipo: o que mudou"` em cada repo: valida, commita e faz push.
+   Se o sync bloquear, explique o motivo em palavras simples e corrija.
+
+## Etapa 4b — Deixar o sync funcionando sozinho
+
+1. A credencial de push fica **na máquina**: `gh auth login` + `gh auth setup-git` (o setup faz isso quando cria os repos)
+   ou uma chave SSH com acesso só aos repos dela.
+2. Teste em cada repo: `scripts/sync.sh --check` deve mostrar `remoto=sim a_enviar=0`.
+3. Explique a regra: ao fim de toda tarefa que mudar arquivos, o agente roda `scripts/sync.sh`
+   (`cerebro/agentes/CONTRATO-SYNC-GIT.md`). Conflito = o agente para e avisa; nada se perde.
+4. Com o OK dela, ative a rotina de rede de segurança `sync-frota` (já descrita em `REGISTRO-RECORRENCIAS.json`):
+   `hermes cron create` rodando `<org>-casa/scripts/sync-frota.sh` a cada 30 min; depois mude o status da rotina para `ativo`.
 
 ## Etapa 5 — Ligar o agente
 

@@ -93,12 +93,14 @@ Próximos passos:
 NEXT
 [[ -z "$GH" ]] && cat <<NEXT
   2. Versionar no seu GitHub depois: crie dois repos PRIVADOS vazios e em cada pasta rode
-       git remote add origin git@github.com:<sua-conta>/<nome>.git && git push -u origin main
+       git remote add origin git@github.com:<sua-conta>/<nome>.git && scripts/sync.sh
 NEXT
 cat <<NEXT
   3. Instale o Hermes:        curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
      e configure:              hermes setup        (modelo e canal; secrets ficam em ~/.hermes/.env)
   4. Diretório de trabalho:    terminal.cwd: $CASA   (em ~/.hermes/config.yaml)
-  5. Projete a identidade:     $CASA/scripts/projetar.sh
-  6. Teste:                    cd $CASA && hermes   → "Quem é você e quem é seu owner?"
+  5. Sync: os agentes fazem commit + push com scripts/sync.sh (veja cerebro/agentes/CONTRATO-SYNC-GIT.md).
+     A credencial do GitHub fica nesta máquina (gh auth login / chave SSH), nunca nos repos.
+  6. Projete a identidade:     $CASA/scripts/projetar.sh
+  7. Teste:                    cd $CASA && hermes   → "Quem é você e quem é seu owner?"
 NEXT

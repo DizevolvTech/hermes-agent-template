@@ -13,6 +13,7 @@
 ## Classes de decisão
 | Classe | Exemplos | Aprovação mínima | Evidência mínima | Modo de gate |
 |---|---|---|---|---|
+| Sync do próprio repo | `scripts/sync.sh` no repo/domínio do agente | liberado (contrato de sync) | hooks verdes + SYNC_OK | sync-git |
 | Institucional comum | status, lição, pendência, MAPA, handoff | {{OWNER_NAME}} (pode delegar ao agente) | paths + diff + validação | escrita-controlada |
 | Institucional sensível | RBAC, política, contrato, ownership | {{OWNER_NAME}} | gate completo + decisão registrada | escrita-controlada |
 | Estrutura dos agentes | config, skills, memória viva, cron, gateway | {{OWNER_NAME}} | plano + backup + validação pós-ação | runtime |

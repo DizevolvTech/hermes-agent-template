@@ -21,7 +21,7 @@ render() {
   cp -a "$TPL/templates/$kind" "$dst"
   mkdir -p "$dst/scripts" "$dst/.githooks"
   cp "$TPL/shared/pre-commit" "$dst/.githooks/"
-  cp "$TPL/shared/scan-secrets.sh" "$TPL/shared/checar-configuracao.sh" "$dst/scripts/"
+  cp "$TPL/shared/scan-secrets.sh" "$TPL/shared/checar-configuracao.sh" "$TPL/shared/sync.sh" "$TPL/shared/sync-frota.sh" "$dst/scripts/"
   if [[ "$kind" != cerebro ]]; then
     cp "$TPL/shared/projetar.sh" "$TPL/shared/status.sh" "$TPL/shared/sync-bundle.sh" "$TPL/shared/validate-casa.py" "$dst/scripts/"
   fi
@@ -62,5 +62,8 @@ ask_github() {
 gh_publish() {
   command -v gh >/dev/null || { echo "ERRO: instale e logue o gh (gh auth login) ou use --sem-github"; exit 1; }
   gh repo create "$GH/$(basename "$1")" --private --source "$1" --remote origin --push >/dev/null
+  git -C "$1" branch -q --set-upstream-to=origin/main main 2>/dev/null || true
+  # Para os agentes conseguirem fazer push depois com a mesma credencial do gh
+  gh auth setup-git >/dev/null 2>&1 || true
   echo "GitHub OK  https://github.com/$GH/$(basename "$1") (privado)"
 }

@@ -24,6 +24,20 @@
       "kill_switch": "hermes cron pause <id>",
       "rollback": "hermes cron remove <id>",
       "status": "proposta"
+    },
+    {
+      "key": "sync-frota",
+      "scheduler": "hermes-cron",
+      "job_name": "sync-frota",
+      "schedule": "*/30 * * * *",
+      "action": "Rodar {{SLUG}}-casa/scripts/sync-frota.sh (rede de segurança: envia commits pendentes de todos os repos)",
+      "effects": "git fetch/rebase/push nos repos da frota; não cria commits",
+      "condition_to_alert": "HOLD_SYNC (conflito, credencial) ou repo com alterações sem commit por mais de 1 dia",
+      "silence_rule": "tudo SYNC_OK → não enviar mensagem",
+      "success_criteria": "todos os repos sem commits a enviar",
+      "kill_switch": "hermes cron pause <id>",
+      "rollback": "hermes cron remove <id>",
+      "status": "proposta"
     }
   ]
 }

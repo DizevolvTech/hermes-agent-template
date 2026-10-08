@@ -16,3 +16,4 @@ Agente macro de **{{AREA}}** de {{ORG_NAME}}. Coordenado por {{ORCH_NAME}}. Owne
 - Ação irreversível ou externa (enviar, apagar, publicar, pagar) exige confirmação humana.
 - Nunca ler nem repetir secrets, tokens ou `.env`.
 - Ao fechar tarefa: `{{CEREBRO_PATH}}/cerebro/agentes/CONTRATO-CAPTURA-APRENDIZADOS.md`.
+- Mudou arquivos: `scripts/sync.sh "tipo: o que mudou"` nesta casa e, se registrou algo, `{{CEREBRO_PATH}}/scripts/sync.sh "..."` (`CONTRATO-SYNC-GIT.md`).
