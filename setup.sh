@@ -4,7 +4,7 @@
 #
 # Uso interativo (recomendado):   ./setup.sh
 # Uso não interativo:
-#   ./setup.sh --org "Minha Empresa" --agente "Atlas" --owner "Maria" \
+#   ./setup.sh --org "Minha Empresa" --agente "Mercurio" --owner "Maria" \
 #              [--missao "..."] [--sobre "..."] [--idioma "pt-BR, UTC-3"] [--canal "Telegram"] \
 #              [--slug minha-empresa] [--destino ~/agentes] [--github <conta-ou-org> | --sem-github] [--sim]
 #
@@ -23,13 +23,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-for bin in git perl python3; do command -v "$bin" >/dev/null || { echo "ERRO: falta '$bin'"; exit 1; }; done
-if [[ -z "$(git config user.name || true)" || -z "$(git config user.email || true)" ]]; then
-  echo "ERRO: configure sua identidade Git antes:"
-  echo '  git config --global user.name "Seu Nome"'
-  echo '  git config --global user.email "seu-usuario@users.noreply.github.com"   # e-mail que pode ficar público'
-  exit 1
-fi
+source "$TPL/tools/lib.sh"
+require_git_identity
 
 ask() { # ask <pergunta> <variável> [padrão]
   local cur="${!2}" v
@@ -45,14 +40,12 @@ ask "O que a organização faz, em uma frase" ABOUT
 ask "Idioma e fuso" LOCALE "pt-BR, UTC-3"
 ask "Canal principal do agente (Telegram, Discord, CLI...)" CHANNEL "Telegram"
 [[ -n "$ORG" && -n "$AGENT" && -n "$OWNER" ]] || { echo "ERRO: organização, agente e owner são obrigatórios"; exit 1; }
-fill() { [[ -n "$1" ]] && echo "$1" || echo "[[PREENCHER: $2]]"; }
 MISSION="$(fill "$MISSION" "missão do agente em uma frase")"
 ABOUT="$(fill "$ABOUT" "o que a organização faz")"
 LOCALE="$(fill "$LOCALE" "idioma e fuso")"
 CHANNEL="$(fill "$CHANNEL" "canal principal")"
 HOST="$(hostname 2>/dev/null || echo host)"
 
-kebab() { echo "$1" | iconv -f utf-8 -t ascii//TRANSLIT 2>/dev/null | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g;s/^-|-$//g'; }
 [[ -n "$SLUG" ]] || SLUG="$(kebab "$ORG")"
 AGENT_SLUG="$(kebab "$AGENT")"
 [[ "$SLUG" =~ ^[a-z0-9-]+$ && "$AGENT_SLUG" =~ ^[a-z0-9-]+$ ]] || { echo "ERRO: slug inválido"; exit 1; }
@@ -60,57 +53,33 @@ mkdir -p "$DEST"; DEST="$(cd "$DEST" && pwd)"
 CEREBRO="$DEST/$SLUG-cerebro"; CASA="$DEST/$SLUG-casa"
 for d in "$CEREBRO" "$CASA"; do [[ ! -e "$d" ]] || { echo "ERRO: $d já existe; não sobrescrevo"; exit 1; }; done
 
-# GitHub: padrão é versionar na conta logada no gh (repos PRIVADOS)
-if [[ $NOGH -eq 0 && -z "$GH" ]] && command -v gh >/dev/null && gh auth status >/dev/null 2>&1; then
-  ME="$(gh api user --jq .login 2>/dev/null || true)"
-  if [[ -n "$ME" && $YES -eq 0 ]]; then
-    read -r -p "Criar os dois repos PRIVADOS no GitHub em qual conta/org? [$ME] (digite 'nao' para pular): " v
-    case "${v:-$ME}" in nao|não|n|N) NOGH=1;; *) GH="${v:-$ME}";; esac
-  fi
-fi
+ask_github
 
 echo; echo "Vou criar:"; echo "  $CEREBRO"; echo "  $CASA"
 echo "  agente: $AGENT ($AGENT_SLUG) · owner: $OWNER"
 [[ -n "$GH" ]] && echo "  GitHub (privado): $GH/$SLUG-cerebro e $GH/$SLUG-casa" || echo "  GitHub: não (só local)"
 if [[ $YES -eq 0 ]]; then read -r -p "Continuar? [s/N] " ok; [[ "$ok" =~ ^[sSyY]$ ]] || exit 1; fi
 
-VERSION="$(cat "$TPL/VERSION")"; TODAY="$(date +%F)"
-export ORG AGENT OWNER SLUG AGENT_SLUG TODAY CEREBRO CASA MISSION ABOUT LOCALE CHANNEL HOST
-render() { # render <src> <dst>
-  cp -a "$1" "$2"
-  find "$2" -depth -name '*__AGENT_SLUG__*' -execdir bash -c 'mv "$1" "${1//__AGENT_SLUG__/$2}"' _ {} "$AGENT_SLUG" \;
-  find "$2" -type f -print0 | while IFS= read -r -d '' f; do
-    grep -Iq . "$f" 2>/dev/null || continue
-    perl -pi -e 's/\{\{ORG_NAME\}\}/$ENV{ORG}/g; s/\{\{AGENT_NAME\}\}/$ENV{AGENT}/g; s/\{\{OWNER_NAME\}\}/$ENV{OWNER}/g;
-                 s/\{\{SLUG\}\}/$ENV{SLUG}/g; s/\{\{AGENT_SLUG\}\}|__AGENT_SLUG__/$ENV{AGENT_SLUG}/g; s/\{\{DATE\}\}/$ENV{TODAY}/g;
-                 s/\{\{CEREBRO_PATH\}\}/$ENV{CEREBRO}/g; s/\{\{CASA_PATH\}\}/$ENV{CASA}/g; s/\{\{MISSION\}\}/$ENV{MISSION}/g;
-                 s/\{\{ABOUT\}\}/$ENV{ABOUT}/g; s/\{\{LOCALE\}\}/$ENV{LOCALE}/g; s/\{\{CHANNEL\}\}/$ENV{CHANNEL}/g;
-                 s/\{\{HOST\}\}/$ENV{HOST}/g' "$f"
-  done
-}
-render "$TPL/templates/cerebro" "$CEREBRO"
-render "$TPL/templates/casa" "$CASA"
+VERSION="$(cat "$TPL/VERSION")"; TODAY="$(date +%F)"; AREA=""; ORCH="$AGENT"; ORCH_SLUG="$AGENT_SLUG"
+export ORG AGENT OWNER SLUG AGENT_SLUG TODAY CEREBRO CASA MISSION ABOUT LOCALE CHANNEL HOST AREA ORCH ORCH_SLUG
+render cerebro "$CEREBRO"
+render casa "$CASA"
 # Bloco do agente no AGENTS.md da casa já nasce projetado (não depende do Hermes instalado)
 HERMES_HOME=/nonexistent "$CASA/scripts/projetar.sh" >/dev/null 2>&1 || true
-
-for r in "$CEREBRO" "$CASA"; do
-  printf '%s\n' "$VERSION" > "$r/.template-version"
-  git -C "$r" init -q -b main
-  git -C "$r" config core.hooksPath .githooks
-  git -C "$r" add -A
-  git -C "$r" commit -q -m "chore: estrutura inicial a partir do hermes-agent-template v$VERSION"
-  echo "OK  $r"
-done
+# Dados da frota para o novo-agente.sh (sem secrets)
+cat > "$CEREBRO/.frota.conf" <<CONF
+ORG="$ORG"
+OWNER="$OWNER"
+SLUG="$SLUG"
+ORCH="$AGENT"
+ORCH_SLUG="$AGENT_SLUG"
+CONF
+git_init "$CEREBRO" "chore: estrutura inicial a partir do hermes-agent-template v$VERSION"
+git_init "$CASA" "chore: estrutura inicial a partir do hermes-agent-template v$VERSION"
 python3 "$CEREBRO/scripts/validate-mapas.py"
 python3 "$CASA/scripts/validate-casa.py"
 
-if [[ -n "$GH" ]]; then
-  command -v gh >/dev/null || { echo "ERRO: instale e logue o gh (gh auth login) ou rode com --sem-github"; exit 1; }
-  for r in "$CEREBRO" "$CASA"; do
-    gh repo create "$GH/$(basename "$r")" --private --source "$r" --remote origin --push >/dev/null
-    echo "GitHub OK  https://github.com/$GH/$(basename "$r") (privado)"
-  done
-fi
+if [[ -n "$GH" ]]; then gh_publish "$CEREBRO"; gh_publish "$CASA"; fi
 
 echo
 echo "== Falta adaptar à sua realidade =="

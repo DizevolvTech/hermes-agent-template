@@ -26,8 +26,10 @@
 
 Seções que deixaram de valer recebem `[SUPERADO]` no título em vez de serem apagadas.
 
-## Vários agentes
+## Vários agentes (frota)
 
-Um diretório por agente em `cerebro/agentes/`, um perfil Hermes por agente
-(`hermes profile create <nome>` → `~/.hermes/profiles/<nome>`) e, quando o agente
-crescer, uma casa própria (`<slug>-casa-<agente>`). A `TOPOLOGIA.md` é a tabela de verdade.
+- **Orquestrador** — identidade no cérebro (`agentes/<orq>/`), casa `<slug>-casa`, runtime `~/.hermes`.
+- **Agentes macro de área** — criados com `./novo-agente.sh`: identidade na casa própria (`<slug>-casa-<agente>`),
+  ponteiro no cérebro (`agentes/<agente>.md`), linha na `TOPOLOGIA-MACRO-AGENTES.md`, perfil `~/.hermes/profiles/<agente>`.
+- Todos leem o **mesmo cérebro**; cada um escreve no próprio domínio (`CONTRATO-ACESSO-CEREBRO-AGENTES.md`).
+- Entre agentes, só handoff/retorno (`CONTRATO-INTEGRACAO-AGENTES.md`) — nunca acesso à casa ou runtime do outro.

@@ -4,7 +4,9 @@
 
 ```text
 empresa/
-├── contexto/   ← geral.md, current-status.md, decisions.md, lessons.md
-├── projetos/   ← pendencias.md + um arquivo por projeto/PRD
+├── contexto/   ← geral, pessoas, canais, metricas, regras-repositorios, playbooks/
+│               ← e os três livros-razão: current-status, decisions, lessons
+├── brand/      ← tom de voz e identidade
+├── projetos/   ← pendencias.md + um arquivo por projeto transversal
 └── skills/     ← _index.md + _templates/ + uma pasta por skill institucional
 ```

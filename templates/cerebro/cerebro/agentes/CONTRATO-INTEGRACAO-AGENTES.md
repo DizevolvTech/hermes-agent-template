@@ -12,5 +12,5 @@ limites (o que NÃO fazer) · critério de aceite · prazo.
 o que foi feito · evidência sanitizada · pendências · registro feito (decisão/lição/status).
 
 ## Regras
-- Handoff vive em `agentes/<orquestrador>/handoffs/`; pedidos operacionais (`REQ-*`) vivem na casa.
+- Handoff macro vive em `agentes/{{AGENT_SLUG}}/handoffs/`; pedidos operacionais (`REQ-*`) vivem na casa.
 - Destino sem capacidade/permissão → devolve `HOLD` com o motivo, não improvisa.

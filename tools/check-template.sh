@@ -27,5 +27,10 @@ T="$(mktemp -d)"; trap 'rm -rf "$T"' EXIT
 GIT_CONFIG_COUNT=2 GIT_CONFIG_KEY_0=user.name GIT_CONFIG_VALUE_0=ci \
 GIT_CONFIG_KEY_1=user.email GIT_CONFIG_VALUE_1=ci@example.invalid \
   ./setup.sh --org "Exemplo SA" --agente "Teste" --owner "Owner" --destino "$T" --sem-github --sim >/dev/null || fail=1
+GIT_CONFIG_COUNT=2 GIT_CONFIG_KEY_0=user.name GIT_CONFIG_VALUE_0=ci \
+GIT_CONFIG_KEY_1=user.email GIT_CONFIG_VALUE_1=ci@example.invalid \
+  ./novo-agente.sh --cerebro "$T/exemplo-sa-cerebro" --agente "Agente Area" --area "area nova" --sem-github --sim >/dev/null || fail=1
+python3 "$T/exemplo-sa-casa-agente-area/scripts/validate-casa.py" >/dev/null || fail=1
+python3 "$T/exemplo-sa-cerebro/scripts/validate-mapas.py" >/dev/null || fail=1
 if grep -rn '{{[A-Z_]*}}\|__AGENT_SLUG__' --exclude-dir=.git "$T"; then echo "FAIL: placeholder não substituído"; fail=1; fi
 [[ $fail -eq 0 ]] && echo "PASS_TEMPLATE" || { echo "FAIL_TEMPLATE"; exit 1; }
