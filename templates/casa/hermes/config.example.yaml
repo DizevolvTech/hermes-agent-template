@@ -2,8 +2,8 @@
 # Gere o seu com `hermes setup` e ajuste só estas chaves. Secrets vão no .env.
 # Confirme os nomes na sua versão: `hermes config --help` / docs oficiais.
 model:
-  provider: "<anthropic|openai|openrouter|nous|custom>"
-  default: "<id-do-modelo>"
+  provider: "[[PREENCHER: anthropic | openai | openrouter | nous | custom]]"
+  default: "[[PREENCHER: id do modelo]]"
 terminal:
   backend: local
   cwd: "{{CASA_PATH}}"        # a casa é o diretório de trabalho do agente

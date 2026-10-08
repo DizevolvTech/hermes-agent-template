@@ -14,7 +14,7 @@ Não é runtime. O agente roda na **casa de execução** (`{{SLUG}}-casa`) e no
 ├── AGENTS.md          ← bootstrap curto para qualquer agente que abrir este repo
 ├── cerebro/           ← conhecimento canônico (comece por cerebro/MAPA.md)
 ├── scripts/           ← validadores (MAPA, secrets) e helper de registro
-└── .githooks/         ← pre-commit versionado (ativar: git config core.hooksPath .githooks)
+└── .githooks/         ← pre-commit versionado
 ```
 
 ## Regras de ouro
@@ -24,3 +24,9 @@ Não é runtime. O agente roda na **casa de execução** (`{{SLUG}}-casa`) e no
    Use `scripts/registrar.py` para criar a entrada no formato certo.
 3. Sem secrets, sem dados pessoais brutos, sem logs. Binários ficam fora (ponteiro apenas).
 4. Remover ou consolidar antes de criar arquivo novo.
+
+## Depois de clonar
+
+```bash
+git config core.hooksPath .githooks   # hooks não vêm ativados num clone
+```

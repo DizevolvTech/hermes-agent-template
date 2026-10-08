@@ -23,10 +23,18 @@ Responde **como o agente executa**. O que a organização sabe e decidiu fica em
 ## Ligação com o runtime
 
 ```bash
-scripts/projetar.sh                 # cérebro → HERMES_HOME (SOUL.md e AGENTS.md)
+scripts/projetar.sh                 # SOUL.md → HERMES_HOME; bootstrap do agente → AGENTS.md da casa
 scripts/projetar.sh --check         # sai 1 se houver drift
 scripts/reconciliar-recorrencias.py # registro no cérebro × jobs do hermes cron
 hermes --in "$PWD"                  # sessão CLI com esta casa como diretório de trabalho
 ```
 
 No gateway (Telegram etc.), aponte `terminal.cwd` do `config.yaml` para esta pasta.
+
+## Depois de clonar em outra máquina
+
+```bash
+git config core.hooksPath .githooks      # hooks não vêm ativados num clone
+$EDITOR .casa.conf                       # CEREBRO_PATH e HERMES_HOME desta máquina
+scripts/projetar.sh && scripts/status.sh
+```

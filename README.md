@@ -12,32 +12,38 @@ Um comando gera dois repositórios:
 O **runtime** (`~/.hermes`: config, `.env`, sessões, logs) nunca é versionado.
 
 ```text
-          edita / commita                     projetar.sh (+ --check de drift)
- humano ───────────────▶  <slug>-cerebro  ─────────────────────────────▶  ~/.hermes  (SOUL.md, AGENTS.md)
-                              ▲     │ lê                                       │
-       registros duráveis     │     ▼                                          │ terminal.cwd
-       (decisão/lição/status) └── <slug>-casa  ◀──────────────────────────────┘
-                                  (diretório de trabalho do agente)
+                         projetar.sh (+ --check de drift)
+ humano ──edita──▶  <slug>-cerebro ─── SOUL.md ─────────────────────▶ ~/.hermes/SOUL.md  (identidade)
+                         ▲     └────── AGENTS.md do agente ──┐
+   registros duráveis    │                                   ▼
+   (decisão/lição/status)└──────────────────────────  <slug>-casa/AGENTS.md  ◀── terminal.cwd do Hermes
+                                                     (diretório de trabalho do agente)
 ```
 
-## Começar (5 minutos)
+## Começar
 
-1. Clique em **Use this template** (ou clone este repo).
-2. Gere seus repos:
+1. Clique em **Use this template** (ou clone este repo) — este repo é só o gerador.
+2. Rode o setup e responda as perguntas sobre a sua organização:
    ```bash
-   ./setup.sh --org "Minha Empresa" --agente "Atlas" --owner "Maria"
-   # opcional: --github <sua-conta>  → cria os dois repos PRIVADOS e faz o push
+   gh auth login        # opcional, mas recomendado: o setup cria os repos na SUA conta
+   ./setup.sh
    ```
-3. Instale e configure o Hermes:
+   Ele gera `<slug>-cerebro` e `<slug>-casa` lado a lado, já com Git, hooks e o primeiro commit, e
+   (se o `gh` estiver logado) cria os dois como **repos privados na sua conta ou org do GitHub** e faz o push.
+   Sem `gh`, ele mostra os comandos para fazer isso depois.
+3. **Adapte à sua realidade.** Tudo que depende de você está marcado com `[[PREENCHER: ...]]`:
+   ```bash
+   <slug>-cerebro/scripts/checar-configuracao.sh   # lista o que falta, com arquivo e linha
+   ```
+   Comece por `agentes/<agente>/SOUL.md`, `USER.md`, `MANDATO.md` e `RBAC-MATRIZ.md`. Commite e faça push:
+   a partir daí, seu GitHub é a memória versionada do agente.
+4. Instale e ligue o Hermes:
    ```bash
    curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
-   hermes setup                          # modelo, canal (ex.: Telegram); secrets no ~/.hermes/.env
-   ```
-4. Ligue o agente à estrutura:
-   ```bash
-   ../minha-empresa-casa/scripts/projetar.sh     # identidade do cérebro → runtime
-   # no ~/.hermes/config.yaml: terminal.cwd: <caminho>/minha-empresa-casa
-   cd ../minha-empresa-casa && hermes --in .     # pergunte: "Quem é você e quem é seu owner?"
+   hermes setup                                # modelo e canal; secrets ficam em ~/.hermes/.env
+   # em ~/.hermes/config.yaml →  terminal.cwd: <caminho>/<slug>-casa
+   <slug>-casa/scripts/projetar.sh             # SOUL.md → ~/.hermes; bootstrap do agente → AGENTS.md da casa
+   cd <slug>-casa && hermes                    # pergunte: "Quem é você e quem é seu owner?"
    ```
 
 **Uma VPS basta.** Os dois repos podem ficar lado a lado na mesma máquina. Se um dia
@@ -61,7 +67,7 @@ Detalhes em [`docs/infraestrutura.md`](docs/infraestrutura.md).
 - `AGENTS.md` / `BOOTSTRAP.md` (ordem de reinício) · `TOOLS.md` · `contratos/` (limites, backup/rollback).
 - `automation/<rotina>/` (uma pasta por rotina registrada) · `governance/templates/` (GATE, REQ, RETORNO) ·
   `handoffs/` (pedidos `REQ-*`, correções nunca reescrevem o original) · `reports/` · `outbox/` (aguardando aprovação).
-- `scripts/projetar.sh` (drift), `reconciliar-recorrencias.py` (registro × `hermes cron`), `novo-req.sh`, `status.sh`, `sync-bundle.sh`, `validate-casa.py`.
+- `scripts/projetar.sh` (drift), `checar-configuracao.sh`, `reconciliar-recorrencias.py` (registro × `hermes cron`), `novo-req.sh`, `status.sh`, `sync-bundle.sh`, `validate-casa.py`.
 - `memory/` curta, `skills/<nome>/SKILL.md`, `hermes/config.example.yaml` e unit systemd de exemplo.
 
 **Nos dois:** hook `pre-commit` versionado que roda os validadores e o scanner de secrets contra o snapshot staged.

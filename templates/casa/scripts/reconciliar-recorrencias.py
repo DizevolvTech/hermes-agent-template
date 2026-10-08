@@ -21,13 +21,17 @@ def conf() -> dict:
     for line in (CASA / ".casa.conf").read_text(encoding="utf-8").splitlines():
         if "=" in line and not line.lstrip().startswith("#"):
             k, v = line.split("=", 1)
-            vals[k.strip()] = os.path.expandvars(shlex.split(v)[0]) if v.strip() else ""
+            v = shlex.split(v)[0] if v.strip() else ""
+            if "${" in v:  # forma ${VAR:-padrão}: o padrão é resolvido abaixo
+                v = ""
+            vals[k.strip()] = os.path.expandvars(v)
     return vals
 
 
 def main() -> int:
     c = conf()
     home = Path(os.environ.get("HERMES_HOME") or c.get("HERMES_HOME") or Path.home() / ".hermes").expanduser()
+    print(f"hermes_home={home}")
     reg_path = Path(c["CEREBRO_PATH"]) / "cerebro/agentes" / c["AGENT_SLUG"] / "REGISTRO-RECORRENCIAS.json"
     reg = json.loads(reg_path.read_text(encoding="utf-8"))
     registered = {r.get("job_name") or r["key"]: r for r in reg.get("recurrences", [])

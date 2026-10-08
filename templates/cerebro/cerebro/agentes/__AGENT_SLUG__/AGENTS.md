@@ -1,6 +1,6 @@
 # AGENTS — {{AGENT_NAME}}
 
-> Projeção quente: copiada para o runtime por `projetar.sh`. Fonte canônica: `{{SLUG}}-cerebro/cerebro/agentes/{{AGENT_SLUG}}/AGENTS.md`.
+> Projeção quente: copiada para o `AGENTS.md` da casa por `projetar.sh`. Fonte canônica: `{{SLUG}}-cerebro/cerebro/agentes/{{AGENT_SLUG}}/AGENTS.md`.
 
 ## Bootstrap
 1. `SOUL.md`, `USER.md`, `MEMORY.md` (índice).

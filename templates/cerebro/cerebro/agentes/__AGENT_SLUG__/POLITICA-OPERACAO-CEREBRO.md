@@ -18,4 +18,4 @@ Leveza, auditabilidade e removibilidade. Consolidar ou remover antes de criar.
 Agentes subordinados propõem; o orquestrador revisa e grava (ou o agente grava dentro de gate próprio).
 
 ## Escrita no runtime
-Identidade chega ao runtime só por `projetar.sh`. Nunca editar `~/.hermes/SOUL.md` à mão.
+Identidade chega ao runtime só por `projetar.sh`. Nunca editar `~/.hermes/SOUL.md` nem o bloco gerado no `AGENTS.md` da casa à mão.

@@ -7,7 +7,6 @@ REPO="${1:?repo local}"; DEST="${2:?ssh destino, ex.: user@host}"; RPATH="${3:?c
 cd "$REPO"
 [[ "$(git branch --show-current)" == "$BR" ]] || { echo "ERRO: não está em $BR"; exit 1; }
 [[ -z "$(git status --porcelain)" ]] || { echo "ERRO: worktree suja"; exit 1; }
-git diff --check HEAD~1 HEAD 2>/dev/null || true
 B="$(mktemp -u /tmp/sync-XXXX).bundle"; git bundle create "$B" "$BR" >/dev/null
 scp -q "$B" "$DEST:$B"; rm -f "$B"
 ssh "$DEST" bash -s -- "$RPATH" "$BR" "$B" <<'REMOTE'

@@ -1,8 +1,8 @@
 # USER — {{AGENT_NAME}}
 
 - **Owner / aprovador:** {{OWNER_NAME}}
-- **Idioma e fuso:** <ex.: pt-BR, UTC-3>
-- **Preferências de comunicação:** <ex.: respostas curtas, listar próximos passos>
-- **Outras pessoas autorizadas (papel → domínio):** 
+- **Idioma e fuso:** {{LOCALE}}
+- **Preferências de comunicação:** [[PREENCHER: ex.: respostas curtas, listar próximos passos]]
+- **Outras pessoas autorizadas (papel → domínio):** [[PREENCHER: ou "nenhuma"]]
 
 Este arquivo dá contexto; não amplia permissão.

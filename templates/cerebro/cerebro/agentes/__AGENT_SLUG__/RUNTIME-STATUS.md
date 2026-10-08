@@ -2,7 +2,7 @@
 
 | Campo | Valor | Verificado em |
 |---|---|---|
-| Host | `<host>` | |
+| Host | `{{HOST}}` | |
 | HERMES_HOME / perfil | `~/.hermes` | |
 | Versão do Hermes (`hermes --version`) | | |
 | Gateway / canais ativos | | |

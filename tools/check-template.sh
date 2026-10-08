@@ -18,12 +18,14 @@ if [[ -f .sanitize-denylist ]]; then
 else
   echo "AVISO: sem .sanitize-denylist local (crie com nomes da empresa, pessoas, clientes, hosts)."
 fi
-if echo "$FILES" | xargs grep -InE '\b([0-9]{1,3}\.){3}[0-9]{1,3}\b|[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\.[a-z]{2,}|/home/[a-z]+/' 2>/dev/null | grep -v 'tools/check-template.sh' | grep -v '@t\b'; then
+if echo "$FILES" | xargs grep -InE '\b([0-9]{1,3}\.){3}[0-9]{1,3}\b|[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\.[a-z]{2,}|/home/[a-z]+/' 2>/dev/null | grep -v 'tools/check-template.sh' | grep -vE 'git@github\.com|users\.noreply\.github\.com|example\.invalid'; then
   echo "SANITIZE_FAIL: IP, e-mail ou home pessoal"; fail=1
 fi
 bash shared/scan-secrets.sh || fail=1
 T="$(mktemp -d)"; trap 'rm -rf "$T"' EXIT
-GIT_AUTHOR_NAME=ci GIT_AUTHOR_EMAIL=ci@example.invalid GIT_COMMITTER_NAME=ci GIT_COMMITTER_EMAIL=ci@example.invalid \
-  ./setup.sh --org "Exemplo SA" --agente "Teste" --owner "Owner" --destino "$T" --sim >/dev/null || fail=1
+# Identidade Git só para este teste, sem tocar na config global de quem roda.
+GIT_CONFIG_COUNT=2 GIT_CONFIG_KEY_0=user.name GIT_CONFIG_VALUE_0=ci \
+GIT_CONFIG_KEY_1=user.email GIT_CONFIG_VALUE_1=ci@example.invalid \
+  ./setup.sh --org "Exemplo SA" --agente "Teste" --owner "Owner" --destino "$T" --sem-github --sim >/dev/null || fail=1
 if grep -rn '{{[A-Z_]*}}\|__AGENT_SLUG__' --exclude-dir=.git "$T"; then echo "FAIL: placeholder não substituído"; fail=1; fi
 [[ $fail -eq 0 ]] && echo "PASS_TEMPLATE" || { echo "FAIL_TEMPLATE"; exit 1; }

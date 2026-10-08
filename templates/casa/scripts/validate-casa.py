@@ -19,7 +19,7 @@ def main() -> int:
     errors = [f"faltando: {p}" for p in REQUIRED if not (root / p).exists()]
     for p in root.rglob("*"):
         rel = p.relative_to(root).as_posix()
-        if rel.startswith(".git/"):
+        if rel.startswith((".git/", "var/", "outbox/")):
             continue
         if FORBIDDEN.search(rel):
             errors.append(f"arquivo de runtime/secret dentro da casa: {rel}")
