@@ -23,7 +23,7 @@ O que a organização sabe e decidiu fica em `{{SLUG}}-cerebro`; quem coordena a
 
 ## Runtime
 Perfil Hermes isolado: `hermes profile create {{AGENT_SLUG}}` → `~/.hermes/profiles/{{AGENT_SLUG}}`.
-No `config.yaml` do perfil: `terminal.cwd: {{CASA_PATH}}`. Depois `scripts/projetar.sh`.
+No `config.yaml` do perfil: `terminal.cwd: /caminho/para/{{SLUG}}-casa-{{AGENT_SLUG}}`. Depois `scripts/projetar.sh`.
 
 ## Depois de clonar em outra máquina
 ```bash

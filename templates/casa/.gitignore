@@ -14,3 +14,4 @@ var/*/*
 __pycache__/
 outbox/*
 !outbox/README.md
+*.bak-*

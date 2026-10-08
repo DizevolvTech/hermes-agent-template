@@ -6,4 +6,4 @@ model:
   default: "[[PREENCHER: id do modelo]]"
 terminal:
   backend: local
-  cwd: "{{CASA_PATH}}"        # a casa é o diretório de trabalho do agente
+  cwd: "/caminho/para/{{SLUG}}-casa-{{AGENT_SLUG}}"        # a casa é o diretório de trabalho do agente

@@ -6,7 +6,7 @@ After=network-online.target
 
 [Service]
 Environment=HERMES_HOME=%h/.hermes
-WorkingDirectory={{CASA_PATH}}
+WorkingDirectory=/caminho/para/{{SLUG}}-casa
 ExecStart=%h/.local/bin/hermes gateway run
 Restart=on-failure
 

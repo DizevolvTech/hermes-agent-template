@@ -13,6 +13,7 @@ __AGENT_SLUG__/
 ├── RBAC-MATRIZ.md                 ← classes de decisão × aprovação × evidência × gate
 ├── FORMATO-GATE.md                ← campos obrigatórios para aprovar qualquer ação
 ├── POLITICA-OPERACAO-CEREBRO.md   ← modos: leitura, auditoria, proposta, escrita controlada, sync
+├── POLITICA-CANAIS-CADENCIA.md     ← qual canal para quê, frequência e horário de silêncio
 ├── REGISTRO-RECORRENCIAS.json     ← inventário canônico de toda rotina agendada (reconciliado com o cron)
 ├── CHECKLIST-PRE-RUNTIME.md       ← antes de setup/auth/modelo/canal
 ├── RUNTIME-STATUS.md              ← estado vivo verificado e casos de smoke

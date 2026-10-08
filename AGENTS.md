@@ -61,11 +61,13 @@ git clone https://github.com/DizevolvTech/hermes-agent-template.git && cd hermes
 ## Etapa 4 — Adaptar à realidade dela
 
 1. Rode `<org>-cerebro/scripts/checar-configuracao.sh` e preencha cada `[[PREENCHER]]` **conversando**: pergunte, escreva, mostre.
-2. **Áreas:** apague as pastas que ela não usa (e a linha correspondente em `cerebro/areas/MAPA.md`); para área nova,
-   copie `cerebro/areas/_modelo-area/` e indexe no MAPA.
+2. **Áreas:** apague as pastas que ela não usa e a linha correspondente em `cerebro/areas/MAPA.md`. Antes, confira
+   `grep -rn "areas/<area>" cerebro/` para não deixar referência quebrada (o hook também acusa ponteiro de agente para área apagada).
+   Para área nova, copie `cerebro/areas/_modelo-area/`, renomeie o `README.md` para `MAPA.md` no formato das outras áreas e indexe em `areas/MAPA.md`.
 3. **Conteúdo existente:** distribua usando o `cerebro/MAPA.md`. Decisões vão para `decisions.md`, aprendizados para
    `lessons.md`, estado atual para `current-status.md` e material de área para `areas/<area>/`. Secrets e logs nunca entram.
-4. Revise com ela `SOUL.md`, `USER.md`, `MANDATO.md` e `RBAC-MATRIZ.md` do agente: é a personalidade e o limite de autonomia.
+4. Revise com ela `SOUL.md`, `USER.md`, `MANDATO.md`, `RBAC-MATRIZ.md` e `POLITICA-CANAIS-CADENCIA.md` do agente:
+   é a personalidade, o limite de autonomia e como ele se comunica.
 5. Salve em passos pequenos com `scripts/sync.sh "tipo: o que mudou"` em cada repo: valida, commita e faz push.
    Se o sync bloquear, explique o motivo em palavras simples e corrija.
 
@@ -85,7 +87,8 @@ git clone https://github.com/DizevolvTech/hermes-agent-template.git && cd hermes
 2. `hermes setup` — ela escolhe modelo e canal; os secrets ficam no `.env` do runtime.
 3. Em `~/.hermes/config.yaml`: `terminal.cwd: <caminho>/<org>-casa`.
 4. `<org>-casa/scripts/projetar.sh` e depois `scripts/status.sh`.
-5. Teste com ela: "Quem é você e quem é seu owner?" e os casos de `cerebro/agentes/evals/`.
+5. Repasse com ela o `CHECKLIST-PRE-RUNTIME.md` do agente.
+6. Teste com ela: "Quem é você e quem é seu owner?" e os casos de `cerebro/agentes/evals/`.
 
 ## Etapa 6 — Crescer (quando ela quiser)
 

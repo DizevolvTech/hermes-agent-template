@@ -47,8 +47,11 @@ for tentativa in 1 2 3; do
     git fetch -q origin "$BR" 2>/dev/null || hold "falha ao buscar origin/$BR"
     git rebase -q "origin/$BR" 2>/dev/null || { git rebase --abort 2>/dev/null; hold "conflito com o remoto; precisa de decisão humana (nada foi perdido)"; }
   fi
-  if git push -q -u origin "$BR" 2>/dev/null; then
+  if out="$(git push -q -u origin "$BR" 2>&1)"; then
     say "SYNC_OK $(git rev-parse --short HEAD)"; exit 0
+  fi
+  if grep -q 'PRE_PUSH_FAIL' <<<"$out"; then
+    echo "$out" | grep -v '^error: failed to push' ; hold "push bloqueado pela validação (commit feito sem passar pelos hooks?); corrija e faça um commit novo"
   fi
   sleep $((tentativa * 2))   # outro agente enviou ao mesmo tempo: integra e tenta de novo
 done

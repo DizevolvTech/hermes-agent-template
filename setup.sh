@@ -28,7 +28,8 @@ require_git_identity
 
 ask() { # ask <pergunta> <variável> [padrão]
   local cur="${!2}" v
-  [[ -n "$cur" || $YES -eq 1 ]] && return
+  [[ -n "$cur" ]] && return
+  [[ $YES -eq 1 ]] && { printf -v "$2" '%s' "${3:-}"; return; }
   read -r -p "$1${3:+ [$3]}: " v; printf -v "$2" '%s' "${v:-${3:-}}"
 }
 echo "== Sua organização e seu agente (Enter deixa em branco para preencher depois) =="
@@ -48,7 +49,8 @@ HOST="$(hostname 2>/dev/null || echo host)"
 
 [[ -n "$SLUG" ]] || SLUG="$(kebab "$ORG")"
 AGENT_SLUG="$(kebab "$AGENT")"
-[[ "$SLUG" =~ ^[a-z0-9-]+$ && "$AGENT_SLUG" =~ ^[a-z0-9-]+$ ]] || { echo "ERRO: slug inválido"; exit 1; }
+[[ "$SLUG" =~ ^[a-z0-9-]+$ && "$AGENT_SLUG" =~ ^[a-z0-9-]+$ ]] || { echo "ERRO: nome precisa ter ao menos uma letra ou número"; exit 1; }
+[[ "$SLUG" != "$AGENT_SLUG" ]] || echo "AVISO: organização e agente com o mesmo nome; os repos ficarão $SLUG-cerebro e $SLUG-casa (funciona, mas pode confundir)"
 mkdir -p "$DEST"; DEST="$(cd "$DEST" && pwd)"
 CEREBRO="$DEST/$SLUG-cerebro"; CASA="$DEST/$SLUG-casa"
 for d in "$CEREBRO" "$CASA"; do [[ ! -e "$d" ]] || { echo "ERRO: $d já existe; não sobrescrevo"; exit 1; }; done
@@ -67,13 +69,8 @@ render casa "$CASA"
 # Bloco do agente no AGENTS.md da casa já nasce projetado (não depende do Hermes instalado)
 HERMES_HOME=/nonexistent "$CASA/scripts/projetar.sh" >/dev/null 2>&1 || true
 # Dados da frota para o novo-agente.sh (sem secrets)
-cat > "$CEREBRO/.frota.conf" <<CONF
-ORG="$ORG"
-OWNER="$OWNER"
-SLUG="$SLUG"
-ORCH="$AGENT"
-ORCH_SLUG="$AGENT_SLUG"
-CONF
+ORCH="$AGENT"; ORCH_SLUG="$AGENT_SLUG"
+write_conf "$CEREBRO/.frota.conf" ORG OWNER SLUG ORCH ORCH_SLUG
 git_init "$CEREBRO" "chore: estrutura inicial a partir do hermes-agent-template v$VERSION"
 git_init "$CASA" "chore: estrutura inicial a partir do hermes-agent-template v$VERSION"
 python3 "$CEREBRO/scripts/validate-mapas.py"

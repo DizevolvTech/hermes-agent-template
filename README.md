@@ -145,7 +145,7 @@ O especialista já nasce com casa própria (um repositório no seu GitHub), runt
 | 🧭 **Agente principal** | Personalidade, mandato, quem aprova o quê, formato de pedido de aprovação, registro de rotinas automáticas |
 | 🏠 **Casa** | Rotinas, pedidos entre agentes, relatórios, mensagens aguardando aprovação |
 | 🔄 **Sync** | O mesmo `scripts/sync.sh` em todos os repos (valida, integra, envia) e o sync da frota pelo agente principal |
-| 🛡️ **Proteções** | Bloqueio de senha no Git, mapa sempre atualizado, aviso se alguém editar a identidade fora do lugar |
+| 🛡️ **Proteções** | Bloqueio de senha e de arquivos pesados no Git, mapa sempre atualizado, registros no formato certo, revalidação antes do push, aviso se alguém editar a identidade fora do lugar |
 | 🧰 **Ajudantes** | Criar estrutura, criar especialista, checar o que falta preencher, status do agente |
 
 Detalhes técnicos de cada pasta e script: [`docs/referencia.md`](docs/referencia.md).

@@ -5,4 +5,4 @@
 - Pessoas do domínio (papéis) → `memory/context/people.md`
 - Integrações → `memory/integrations/`
 - Projetos em andamento → `memory/projects/`
-- Institucional (prevalece) → `{{CEREBRO_PATH}}/cerebro/empresa/contexto/` e `cerebro/areas/{{AREA}}/`
+- Institucional (prevalece) → `../{{SLUG}}-cerebro/cerebro/empresa/contexto/` e `cerebro/areas/{{AREA}}/`

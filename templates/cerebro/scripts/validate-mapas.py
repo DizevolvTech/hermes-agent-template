@@ -55,6 +55,11 @@ def main() -> int:
                 continue
             if child.name not in names:
                 errors.append(f"{mapa.relative_to(base.parent)}: não indexa '{child.name}'")
+    # Referências quebradas: ponteiros de agente apontando para área apagada
+    for ptr in sorted((base / "agentes").glob("*.md")):
+        for area in re.findall(r"`areas/([a-z0-9-]+)/`", ptr.read_text(encoding="utf-8")):
+            if not (base / "areas" / area).is_dir():
+                errors.append(f"{ptr.relative_to(base.parent)}: aponta para areas/{area}/, que não existe")
     if not (base / "MAPA.md").exists():
         errors.append("cerebro/MAPA.md ausente")
     for e in errors:

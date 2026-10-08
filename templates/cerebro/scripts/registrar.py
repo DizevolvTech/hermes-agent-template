@@ -35,6 +35,8 @@ def main() -> None:
     ap.add_argument("estado", nargs="?", default="")
     ap.add_argument("--autorizado-por", default="")
     args = ap.parse_args()
+    if args.tipo == "status" and not args.estado:
+        ap.error('status precisa do estado: registrar.py status "<Agente>" "<estado>"')
     fname, tpl = TEMPLATES[args.tipo]
     entry = tpl.format(d=TODAY, t=args.titulo, s=args.estado, a=args.autorizado_por)
     path = CTX / fname

@@ -12,3 +12,4 @@ logs/
 var/*/*
 !var/*/.gitkeep
 __pycache__/
+*.bak-*

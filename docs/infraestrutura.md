@@ -8,8 +8,9 @@
 ~/.hermes                 (runtime, sem git; faça backup cifrado)
 ```
 
-O agente lê o cérebro direto do disco. Para escrever registros, ele commita no cérebro;
-o push pode ser seu (revisão humana) ou do agente com uma deploy key de escrita restrita ao repo.
+O agente lê o cérebro direto do disco e **ele mesmo** faz commit e push com `scripts/sync.sh`
+(`cerebro/agentes/CONTRATO-SYNC-GIT.md`). A credencial de push fica na máquina: `gh auth login` + `gh auth setup-git`,
+ou uma chave SSH/deploy key com escrita só nos repos da frota. Você revisa pelo histórico do GitHub.
 
 ## Duas máquinas
 

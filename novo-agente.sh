@@ -66,7 +66,7 @@ if [[ -n "${NEW_AREA:-}" ]]; then
 > Owner: $OWNER · Última validação: $TODAY · Revalidar quando: a estrutura desta pasta mudar
 
 **Escopo:** [[PREENCHER: escopo da área]].
-**Agente macro responsável:** $AGENT
+**Agente macro responsável:**
 
 \`\`\`text
 $AREA/
@@ -76,9 +76,18 @@ $AREA/
 └── skills/     ← skills da área (formato empresa/skills/_templates)
 \`\`\`
 MAPA
-  sed -i "s|^└── _modelo-area/|├── $AREA/  ← [[PREENCHER: escopo da área]]\n└── _modelo-area/|" "$C/areas/MAPA.md"
+  NEWLINE="$(printf '├── %-17s← [[PREENCHER: escopo da área]]' "$AREA/")" \
+    perl -pi -e 's/^└── _modelo-area\//$ENV{NEWLINE}\n└── _modelo-area\//' "$C/areas/MAPA.md"
 fi
-sed -i "s|^\*\*Agente macro responsável:\*\*.*|**Agente macro responsável:** $AGENT — ver \`cerebro/agentes/$AGENT_SLUG.md\`.|" "$C/areas/$AREA/MAPA.md"
+# Responsável da área: acrescenta (uma área pode ter mais de um agente)
+RESP_LINE="$C/areas/$AREA/MAPA.md"
+if grep -q '^\*\*Agente macro responsável:\*\* .*orquestrador' "$RESP_LINE" || grep -q '^\*\*Agente macro responsável:\*\* *$' "$RESP_LINE"; then
+  NEWRESP="**Agente macro responsável:** $AGENT — ver \`cerebro/agentes/$AGENT_SLUG.md\`." \
+    perl -pi -e 's/^\*\*Agente macro responsável:\*\*.*$/$ENV{NEWRESP}/' "$RESP_LINE"
+else
+  echo "AVISO: a área $AREA já tem agente responsável; $AGENT entra como responsável adicional"
+  ADD=", $AGENT (\`cerebro/agentes/$AGENT_SLUG.md\`)" perl -pi -e 's/^(\*\*Agente macro responsável:\*\*.*?)\.?$/$1$ENV{ADD}./' "$RESP_LINE"
+fi
 cat > "$C/agentes/$AGENT_SLUG.md" <<PTR
 # $AGENT
 
@@ -97,7 +106,8 @@ Ponteiro. A identidade completa e a operação de $AGENT moram na casa dele.
 - Não cria outros agentes nem sistemas independentes; pede a $ORCH.
 - Não atua fora de \`$AREA\` sem handoff.
 PTR
-sed -i "s#^<!-- novo-agente.sh acrescenta linhas acima desta marca -->#| $AGENT | macro de área | $AREA | Hermes Agent | \`$HOST\` | \`~/.hermes/profiles/$AGENT_SLUG\` | \`$(basename "$CASA")\` | [[PREENCHER: canal]] | PROPOSTO |\n&#" "$C/agentes/TOPOLOGIA-MACRO-AGENTES.md"
+ROW="| $AGENT | macro de área | $AREA | Hermes Agent | \`$HOST\` | \`~/.hermes/profiles/$AGENT_SLUG\` | \`$(basename "$CASA")\` | [[PREENCHER: canal]] | PROPOSTO |" \
+  perl -pi -e 's/^(<!-- novo-agente.sh acrescenta linhas acima desta marca -->)/$ENV{ROW}\n$1/' "$C/agentes/TOPOLOGIA-MACRO-AGENTES.md"
 python3 - "$C/agentes/TOPOLOGIA-MACRO-AGENTES.md" <<'PY'
 import sys,re
 p=sys.argv[1]; s=open(p).read()

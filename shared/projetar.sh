@@ -18,6 +18,9 @@ BEGIN="<!-- BEGIN projecao-cerebro: gerado por scripts/projetar.sh; edite no cé
 END="<!-- END projecao-cerebro -->"
 [[ -d "$SRC" ]] || { echo "ERRO: $SRC não existe (ajuste IDENTITY_SRC/CEREBRO_PATH em .casa.conf)"; exit 2; }
 drift=0
+# Rótulo da fonte sem caminho da máquina (ex.: minha-org-cerebro/cerebro/agentes/orion), igual em qualquer clone
+SRC_ABS="$(cd "$SRC" && pwd)"; SRC_TOP="$(git -C "$SRC_ABS" rev-parse --show-toplevel 2>/dev/null || echo "$SRC_ABS")"
+SRC_LABEL="$(basename "$SRC_TOP")${SRC_ABS#"$SRC_TOP"}"
 
 apply() { # apply <rótulo> <destino> <conteúdo desejado>
   local label="$1" dest="$2" want="$3" have
@@ -27,16 +30,19 @@ apply() { # apply <rótulo> <destino> <conteúdo desejado>
   case "$MODE" in
     --check)   echo "DRIFT     $label" ;;
     --dry-run) echo "MUDARIA   $label"; diff <(echo "$have") <(echo "$want") | head -20 || true ;;
-    *) [[ -f "$dest" ]] && cp "$dest" "$dest.bak-$(date +%Y%m%dT%H%M%S)"
+    *) if [[ -f "$dest" ]]; then   # backup fora do Git: casa → var/state/, runtime → próprio HERMES_HOME
+         bdir="$(dirname "$dest")"; [[ "$bdir" == "$CASA" ]] && bdir="$CASA/var/state" && mkdir -p "$bdir"
+         cp "$dest" "$bdir/$(basename "$dest").bak-$(date +%Y%m%dT%H%M%S)"
+       fi
        printf '%s\n' "$want" > "$dest"; echo "PROJETADO $label" ;;
   esac
 }
 
 if [[ -d "$HERMES_HOME" ]]; then
   apply "SOUL.md → $HERMES_HOME" "$HERMES_HOME/SOUL.md" \
-    "$(cat "$SRC/SOUL.md"; printf '\n<!-- Fonte canônica: %s/SOUL.md · gerado por projetar.sh -->' "$SRC")"
+    "$(cat "$SRC/SOUL.md"; printf '\n<!-- Fonte canônica: %s/SOUL.md · gerado por projetar.sh -->' "$SRC_LABEL")"
 else
-  echo "AVISO     HERMES_HOME=$HERMES_HOME não existe; SOUL.md não projetado (instale o Hermes)"; drift=1
+  echo "AVISO     HERMES_HOME=$HERMES_HOME não existe; SOUL.md não projetado (instale o Hermes ou crie o perfil: hermes profile create $AGENT_SLUG)"; drift=1
 fi
 
 if [[ "$(cd "$SRC" && pwd)" != "$CASA" ]]; then

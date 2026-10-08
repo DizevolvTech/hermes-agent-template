@@ -6,7 +6,9 @@
 set -uo pipefail
 HERE="$(cd "$(dirname "$0")/.." && pwd)"
 PARENT="$(dirname "$HERE")"
-SLUG="$(basename "$HERE" | sed -E 's/-(cerebro|casa(-.*)?)$//')"
+CASA="$HERE"
+if [[ -f "$HERE/.casa.conf" ]]; then source "$HERE/.casa.conf"; elif [[ -f "$HERE/.frota.conf" ]]; then source "$HERE/.frota.conf"; fi
+[[ -n "${SLUG:-}" ]] || { echo "ERRO: SLUG não encontrado em .casa.conf/.frota.conf"; exit 2; }
 rc=0
 for r in "$PARENT/$SLUG-cerebro" "$PARENT/$SLUG-casa" "$PARENT/$SLUG"-casa-*; do
   [[ -x "$r/scripts/sync.sh" ]] || continue

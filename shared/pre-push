@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Hook versionado: antes de enviar, valida o estado final de cada commit enviado.
+# Pega commits feitos com --no-verify. Ative com: git config core.hooksPath .githooks
+set -euo pipefail
+ROOT="$(git rev-parse --show-toplevel)"
+while read -r _local_ref local_sha _remote_ref _remote_sha; do
+  [[ "$local_sha" =~ ^0+$ ]] && continue   # branch sendo apagada
+  SNAP="$(mktemp -d)"
+  git archive "$local_sha" | tar -x -C "$SNAP"
+  for v in "$ROOT"/scripts/validate-*.py; do
+    [[ -e "$v" ]] || continue
+    python3 "$v" --root "$SNAP" >/dev/null || { echo "PRE_PUSH_FAIL: $(basename "$v") em ${local_sha:0:7}"; python3 "$v" --root "$SNAP" | tail -5; rm -rf "$SNAP"; exit 1; }
+  done
+  rm -rf "$SNAP"
+done
+"$ROOT/scripts/scan-secrets.sh" >/dev/null || { echo "PRE_PUSH_FAIL: possível secret versionado"; "$ROOT/scripts/scan-secrets.sh"; exit 1; }

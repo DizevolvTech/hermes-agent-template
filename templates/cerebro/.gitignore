@@ -7,3 +7,4 @@ auth.json
 __pycache__/
 .external-artifacts/
 tmp/
+*.bak-*

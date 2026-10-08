@@ -1,7 +1,11 @@
 # Funções comuns do gerador (source, não executar).
 TPL="${TPL:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 
-kebab() { echo "$1" | iconv -f utf-8 -t ascii//TRANSLIT 2>/dev/null | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g;s/^-|-$//g'; }
+# Slug portátil (Linux e macOS): "Café & Cia" → "cafe-cia"
+kebab() { python3 -c 'import re,sys,unicodedata as u; s=u.normalize("NFKD",sys.argv[1]).encode("ascii","ignore").decode().lower(); print(re.sub(r"[^a-z0-9]+","-",s).strip("-"))' "$1"; }
+
+# write_conf <arquivo> VAR... — grava VAR=valor com escape seguro de shell (aspas, $, crases)
+write_conf() { local f="$1" v; shift; : > "$f"; for v in "$@"; do printf '%s=%q\n' "$v" "${!v}" >> "$f"; done; }
 fill()  { [[ -n "$1" ]] && echo "$1" || echo "[[PREENCHER: $2]]"; }
 
 require_git_identity() {
@@ -20,7 +24,7 @@ render() {
   local kind="$1" dst="$2" f
   cp -a "$TPL/templates/$kind" "$dst"
   mkdir -p "$dst/scripts" "$dst/.githooks"
-  cp "$TPL/shared/pre-commit" "$dst/.githooks/"
+  cp "$TPL/shared/pre-commit" "$TPL/shared/pre-push" "$dst/.githooks/"
   cp "$TPL/shared/scan-secrets.sh" "$TPL/shared/checar-configuracao.sh" "$TPL/shared/sync.sh" "$TPL/shared/sync-frota.sh" "$dst/scripts/"
   if [[ "$kind" != cerebro ]]; then
     cp "$TPL/shared/projetar.sh" "$TPL/shared/status.sh" "$TPL/shared/sync-bundle.sh" "$TPL/shared/validate-casa.py" "$dst/scripts/"

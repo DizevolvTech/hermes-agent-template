@@ -32,8 +32,8 @@ Para quem quer os detalhes: o que cada pasta faz, scripts e comandos.
 │   │       ├── RUNTIME-STATUS · lessons · prompts/ · handoffs/
 │   ├── seguranca/                    ← checklist e auditorias
 │   └── archive/                      ← histórico morto (mover, não apagar)
-├── scripts/                          ← sync.sh · sync-frota.sh · validate-mapas.py · registrar.py · scan-secrets.sh · checar-configuracao.sh
-└── .githooks/pre-commit              ← valida MAPA + secrets no snapshot staged
+├── scripts/                          ← sync.sh · sync-frota.sh · registrar.py · validate-{mapas,registros,artifacts}.py · scan-secrets.sh · checar-configuracao.sh
+└── .githooks/pre-commit · pre-push   ← validam MAPA, registros, artefatos e secrets
 ```
 
 ### Casa do orquestrador (`<slug>-casa`)
@@ -65,7 +65,7 @@ Para quem quer os detalhes: o que cada pasta faz, scripts e comandos.
 
 ### Runtime
 
-Layout de `~/.hermes` e `~/.hermes/profiles/<agente>`, e o que mora em cada camada: [`docs/runtime.md`](docs/runtime.md).
+Layout de `~/.hermes` e `~/.hermes/profiles/<agente>`, e o que mora em cada camada: [`docs/runtime.md`](runtime.md).
 
 ---
 
@@ -73,13 +73,13 @@ Layout de `~/.hermes` e `~/.hermes/profiles/<agente>`, e o que mora em cada cama
 
 | Situação | O que fazer |
 |---|---|
-| Terminou uma tarefa | O agente classifica e registra (`CONTRATO-CAPTURA-APRENDIZADOS.md`). Manual: `cerebro/scripts/registrar.py decisao\|licao\|status "..."` |
+| Terminou uma tarefa | O agente classifica e registra (`CONTRATO-CAPTURA-APRENDIZADOS.md`). Manual: `scripts/registrar.py decisao\|licao\|status "..."` |
 | Mudou identidade ou regras | Edite no cérebro (ou na casa, se for agente macro) → `projetar.sh` → `projetar.sh --check` → smoke |
 | Nova rotina | Linha em `REGISTRO-RECORRENCIAS.json` → código em `automation/<key>/` → `hermes cron create` → `reconciliar-recorrencias.py` verde |
 | Delegar | `casa/scripts/novo-req.sh <DESTINO> <ASSUNTO>`; retorno com `governance/templates/RETORNO.md` |
 | Ação sensível | Gate completo (`FORMATO-GATE.md`); gate incompleto = HOLD |
 | Pasta nova no cérebro | Indexe no `MAPA.md` da pasta, senão o commit é bloqueado |
-| Novo agente de área | `./novo-agente.sh` (ver acima) |
+| Novo agente de área | `./novo-agente.sh` (no repositório do template; ver README → Crescendo) |
 
 ---
 

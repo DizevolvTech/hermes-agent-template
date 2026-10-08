@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.5.0 — revisão de qualidade
+
+Segurança e robustez
+- Nomes com aspas, `$`, crases ou `$(...)` não quebram nem executam nada (`.frota.conf` gravado com escape).
+- `projetar.sh` não deixa mais backups versionados (vão para `var/state/` ou para o `HERMES_HOME`).
+- Repos 100% portáveis: nenhum caminho da máquina gravado; `.casa.conf` resolve o cérebro como pasta irmã.
+- `sync-frota.sh` lê o slug da configuração (não confunde orgs com "casa"/"cerebro" no nome).
+- Hook `pre-push` revalida o que vai ser enviado (pega commit feito com `--no-verify`); o sync para na hora com mensagem clara.
+- Compatível com macOS: slug via Python (NFKD) e edições via perl (sem `sed -i`).
+
+Novos guardas e conteúdo
+- `validate-artifacts.py` (PDF, planilhas, ZIP, mídia e arquivos grandes ficam fora do cérebro).
+- `validate-registros.py` (títulos de decisions/lessons/current-status no formato padrão).
+- `validate-mapas.py` acusa ponteiro de agente para área apagada.
+- `POLITICA-CANAIS-CADENCIA.md`, BOOTSTRAP com "permitido direto / precisa de procedimento", skill `autorrevisao`.
+
+Correções menores
+- Segundo agente na mesma área é acrescentado como responsável (não substitui o primeiro).
+- `--sim` aplica os padrões de idioma e canal; `registrar.py status` exige o estado; `novo-req.sh` com acentos e barras.
+- `status.sh` consulta o gateway do perfil certo; docs com links e caminhos corrigidos; regra única de quem faz push.
+
 ## 1.4.0
 
 - Sync padronizado: `scripts/sync.sh` em todos os repos (valida → commit → rebase → push, retry, conflito = HOLD)
