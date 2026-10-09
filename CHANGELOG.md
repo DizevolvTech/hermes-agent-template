@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.2 — um agente para começar
+
+- README: diagrama destaca o agente principal; especialistas aparecem tracejados como opcionais.
+- `AGENTS.md`: a montagem inicial cria só o agente principal; áreas são pastas, não agentes.
+
 ## 1.5.1 — testado com Hermes real
 
 - Correção: agente de área com `HERMES_HOME` no ambiente projetava o SOUL por cima do orquestrador;

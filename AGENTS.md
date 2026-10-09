@@ -42,6 +42,9 @@ Resuma em linguagem simples, por exemplo:
 > **{org}-cerebro**, a memória da organização, e **{org}-casa**, onde o **{agente}** trabalha.
 > Áreas: {lista}. Depois ligamos o {agente} no {canal}. Posso seguir?
 
+**Monte só o agente principal.** Não proponha agentes especialistas na montagem inicial: áreas são pastas no
+cérebro, não agentes. Especialista só nasce depois, quando a pessoa pedir ou uma área mostrar demanda real (`novo-agente.sh`).
+
 ## Etapa 3 — Criar a estrutura
 
 Com acesso a um terminal:

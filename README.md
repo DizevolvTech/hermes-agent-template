@@ -44,26 +44,23 @@ aprenderam e **fazem o próprio sync**: commit e push.
 flowchart TB
     C[("🧠 CÉREBRO<br/><b>sua-org-cerebro</b><br/>decisões · aprendizados · status<br/>áreas · regras · identidade dos agentes")]
 
-    subgraph D["💻 Área: Desenvolvimento"]
-        D1["<b>Vulcano</b><br/>especialista em sistemas"] -->|"sync · push"| D2["📁 GitHub<br/>sua-org-casa-vulcano"]
-    end
-    subgraph P["⚙️ Área: Operações"]
-        P1["<b>Ceres</b><br/>especialista em operação"] -->|"sync · push"| P2["📁 GitHub<br/>sua-org-casa-ceres"]
-    end
-    subgraph V["💼 Área: Vendas"]
-        V1["<b>Mercúrio</b><br/>especialista comercial"] -->|"sync · push"| V2["📁 GitHub<br/>sua-org-casa-mercurio"]
-    end
-    subgraph O["🧭 Agente principal"]
+    subgraph O["🧭 Agente principal · comece por aqui"]
         O1["<b>Orion</b><br/>coordena e organiza"] -->|"sync · push"| O2["📁 GitHub<br/>sua-org-casa"]
     end
+    subgraph E["➕ Especialistas · opcionais, só quando uma área pedir"]
+        direction LR
+        V1["<b>Mercúrio</b><br/>vendas"] -->|"sync · push"| V2["📁 sua-org-casa-mercurio"]
+        D1["<b>Vulcano</b><br/>sistemas"] -->|"sync · push"| D2["📁 sua-org-casa-vulcano"]
+    end
 
-    C <-->|"lê · registra · sync"| D1
-    C <-->|"lê · registra · sync"| P1
-    C <-->|"lê · registra · sync"| V1
     C <-->|"lê · registra · sync"| O1
+    C -.->|"lê · registra · sync"| V1
+    C -.->|"lê · registra · sync"| D1
+    style E stroke-dasharray: 5 5
 ```
 
-<sub>Os especialistas são opcionais: comece só com o agente principal e crie os outros quando uma área pedir. Orion, Mercúrio, Ceres e Vulcano são só exemplos: os nomes são todos seus.</sub>
+**Você começa só com o agente principal.** Os especialistas (tracejados) são opcionais: crie um quando uma área tiver demanda de verdade.
+<sub>Orion, Mercúrio e Vulcano são só exemplos: os nomes são todos seus.</sub>
 
 | | O que guarda | Onde fica |
 |---|---|---|
